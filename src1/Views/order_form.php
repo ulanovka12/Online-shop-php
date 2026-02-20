@@ -11,10 +11,10 @@
         <input type="text" placeholder="Enter contact_name" name="contact_name" id="contact_name" required>
 
         <label for="email"><b>Contact phone</b></label>
-        <?php if (isset($errors['Contact_phone'])): ?>
-            <label style="color: #ff0000"><?php echo $errors['Contact_phone']; ?></label>
+        <?php if (isset($errors['contact_phone'])): ?>
+            <label style="color: #ff0000"><?php echo $errors['contact_phone']; ?></label>
         <?php endif; ?>
-        <input type="text" placeholder="Enter Contact phone" name="Contact_phone" id="Contact_phone" required>
+        <input type="text" placeholder="Enter contact phone" name="contact_phone" id="contact_phone" required>
 
         <label for="password"><b>Address</b></label>
         <?php if (isset($errors['address'])): ?>

@@ -5,7 +5,7 @@ namespace Model;
 class Cart extends Model
 {
 
-    public function getByCart(int $userId): array
+    public function getByUserId(int $userId): array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
         $stmt->execute(['userId' => $userId]);

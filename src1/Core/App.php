@@ -105,6 +105,5 @@ class App
            require_once '../Views/404.php';
        }
     }
-
 }
 

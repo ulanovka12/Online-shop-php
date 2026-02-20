@@ -29,7 +29,7 @@ class CartController
 //        require_once '../Model/Cart.php';
 //        $cartModel = new Cart();
 
-        $userProducts = $this->cartModel->getByCart($userId);
+        $userProducts = $this->cartModel->getByUserId($userId);
 
         print_r($userId);
         print_r($userProducts);

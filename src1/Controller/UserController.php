@@ -2,7 +2,6 @@
 // проверка работы коммита
 namespace Controller;
 
-
 use Model\User;
 
 class UserController
