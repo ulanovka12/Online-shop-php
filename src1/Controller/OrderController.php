@@ -9,12 +9,11 @@ use Model\User;
 class OrderController
 {
     private Order $OrderModel;
-    private User $userModel;
+
 
     public function __construct()
     {
         $this->OrderModel = new Order();
-        $this->userModel = new User();
     }
 
 
