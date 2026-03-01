@@ -6,6 +6,7 @@ use Model\User;
 
 class UserController
 {
+
     private User $userModel;
 
     public function __construct()
@@ -17,7 +18,7 @@ class UserController
     {
         session_start();
         if (!isset($_SESSION['userId'])) {
-            header('Location: /catalog');
+            header('Location: /login');
         }
         require_once '../Views/registration_form.php';
     }
@@ -26,7 +27,7 @@ class UserController
     {
         $errors = $this->validateRegistrate($_POST);
 
-        if (empty($errors)) {
+        if (!empty($errors)) {
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -36,10 +37,9 @@ class UserController
 
 
             $result = $this->userModel->getByUsername($name, $email, $password);
+//            print_r($result);
 
             $result = $this->userModel->getByEmail($email);
-
-            print_r($result);
 
         }
         require_once '../Views/registration_form.php';
@@ -53,6 +53,7 @@ class UserController
 
         if (!empty($errorName)) {
             $errors['name'] = $errorName;
+
         }
 
         if (isset($data['email'])) {
@@ -66,7 +67,7 @@ class UserController
                 $user = $this->userModel->ValidateCountRegistrate($email);
                 require_once '../Views/registration_form.php';
 
-                if ($user !== 0) {
+                if ($user !== false) {
                     $errors['email'] = 'Этот email уже существует';
                 }
             }

@@ -1,9 +1,12 @@
 <?php
 
+
+
 namespace Model;
 
 class User extends Model
 {
+
     public function getByEmail(string $email): array|false
     {
 
@@ -49,9 +52,9 @@ class User extends Model
 
     }
 
-    public function deleteByUserId (int $userId): void
-    {
-        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE id = :userId");
-        $stmt->execute(['userId' => $userId]);
-    }
+//    public function deleteByUserId (int $userId): void
+//    {
+//        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE id = :userId");
+//        $stmt->execute(['userId' => $userId]);
+//    }
 }
