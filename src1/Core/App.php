@@ -2,12 +2,12 @@
 
 namespace Core;
 
-use classes\OrderController;
+
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
 use Controller\ProfileController;
-
+use Controller\OrderController;
 class App
 {
     private array $routes = [
@@ -67,11 +67,11 @@ class App
         ],
         '/create-order' => [
             'GET' => [
-                'class' => \Controller\OrderController::class,
+                'class' => OrderController::class,
                 'method' => 'getCheckForm',
             ],
             'POST' => [
-                'class' => \Controller\OrderController::class,
+                'class' => OrderController::class,
                 'method' => 'handleCheckout',
             ],
         ],
@@ -104,6 +104,14 @@ class App
            http_response_code(404);
            require_once '../Views/404.php';
        }
+    }
+
+    public function  addRoute(string $route, string $routeMethod, string $className, string $method)
+    {
+        $this->routes[$route][$routeMethod] = [
+                'class' => $className,
+                'method' => $method,
+        ];
     }
 }
 

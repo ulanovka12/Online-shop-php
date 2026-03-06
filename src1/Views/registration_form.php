@@ -1,4 +1,4 @@
-<form method="POST" action="registration" enctype="multipart/form-data">
+<form method="POST" action="/registration" enctype="multipart/form-data">
     <div class="container">
         <h1>Register</h1>
         <p>Please fill in this form to create an account.</p>

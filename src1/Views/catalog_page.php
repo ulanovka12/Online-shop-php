@@ -1,4 +1,5 @@
-<div class="container">
+<div class="catalog">
+
 
     <a href="/profile">Мой профиль</a>
     <a href="/cart">Добавить в корзину</a>
