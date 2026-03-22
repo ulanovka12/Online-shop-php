@@ -2,11 +2,9 @@
 
 namespace Core;
 
-
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
-use Controller\ProfileController;
 use Controller\OrderController;
 class App
 {
@@ -39,8 +37,8 @@ class App
         ],
         '/profile' => [
             'GET' => [
-                'class' => ProfileController::class,
-                'method' => 'Profile',
+                'class' => UserController::class,
+                'method' => 'profile',
             ],
         ],
         '/cart' => [
@@ -51,7 +49,7 @@ class App
         ],
         '/profile-change' => [
             'GET' => [
-                'class' => ProfileController::class,
+                'class' => UserController::class,
                 'method' => 'editProfile',
             ],
         ],

@@ -4,14 +4,47 @@ namespace Model;
 
 class Product extends Model
 {
-    public function getByCatalog(): array
+    private int $id;
+    private string $name;
+    private string $description;
+    private string $price;
+//    public function getAll(): array|false
+//    {
+//
+//        $stmt = $this->pdo->query("SELECT * FROM products");
+//        $products = $stmt->fetchAll();
+//
+//        //Должен быть какой-то цикл, чтобы преобразовать из массива в объект
+//        foreach ($products as $product) {
+//        }
+//
+//        return $products;
+//    }
+    public function getAll(): array|false
     {
-
         $stmt = $this->pdo->query("SELECT * FROM products");
-        $products = $stmt->fetchAll();
+        $productsData = $stmt->fetchAll();
+
+        if ($productsData === false) {
+            return false;
+        }
+
+        $products = [];
+        foreach ($productsData as $productData) {
+            $obj = new self();
+
+            // Заполняем свойства объекта
+            $obj->id = (int)$productData['id'];
+            $obj->name = (string)$productData['name'];
+            $obj->price = (float)$productData['price'];
+            $obj->description = (string)$productData['description'];
+
+            $products[] = $product;
+        }
 
         return $products;
     }
+
 
     public function getByProductId(int $userId, int $productId)
     {
@@ -52,4 +85,25 @@ class Product extends Model
         }
         return $productData;
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getPrice(): string
+    {
+        return $this->price;
+    }
+
 }
