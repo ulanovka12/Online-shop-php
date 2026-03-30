@@ -21,7 +21,7 @@ class Product extends Model
 //
 //        return $products;
 //    }
-    public function getAll(): self|null
+    public function getAll(): array|null
     {
         $stmt = $this->pdo->query("SELECT * FROM products");
         $products = $stmt->fetchAll();
@@ -30,18 +30,21 @@ class Product extends Model
             return null;
         }
 
-//        $products = [];
+        $product = [];
 
         foreach ($products as $row) {
             $obj = new self();
-            $obj->image_url = (string) $row['image_url'];
-            $obj->id = (int)$row['id'];
-            $obj->name = (string)$row['name'];
-            $obj->price = (int)$row['price'];
-            $obj->description = (string)$row['description'];
+
+            $obj->id = $row['id'];
+            $obj->name = $row['name'];
+            $obj->description = $row['description'];
+            $obj->price = $row['price'];
+            $obj->image_url = $row['image_url'];
+
+            $product[] = $obj;
         }
 
-        return $obj;
+        return $product;
     }
 
 
@@ -106,7 +109,7 @@ class Product extends Model
     }
     public function getImage_url(): string
     {
-        return $this->price;
+        return $this->image_url;
     }
 
 }

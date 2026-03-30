@@ -112,7 +112,7 @@ class ProductController
 //        require_once '../Model/Product.php';
 //        $productModel = new Product();
 
-        $products =$this->productModel->getAll();
+        $products = $this->productModel->getAll();
 
         require_once '../Views/catalog_page.php';
     }
