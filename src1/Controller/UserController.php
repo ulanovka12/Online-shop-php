@@ -57,6 +57,61 @@ class UserController
         require_once '../Views/registration_form.php';
     }
 
+//    private function validateRegistrate(array $data): array
+//    {
+//        $errors = [];
+//
+//        $errorName = $this->validateName($data);
+//
+//        if (!empty($errorName)) {
+//            $errors['name'] = $errorName;
+//        }
+//
+//        // Валидация email
+//        if (isset($data['email'])) {
+//            $email = $data['email'];
+//            if (strlen($email) < 3) {
+//                $errors['email'] = "Email не может содержать меньше 3 символов";
+//            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+//                $errors['email'] = 'incorrect email';
+//            } else {
+//                // Проверяем, существует ли email в базе данных
+//                $exitUser = $this->userModel->ValidateCountRegistrate($email);
+//
+////                 require_once '../Views/registration_form.php';
+//
+//                if ($exitUser !== false) {
+//                    $errors['email'] = 'Этот email уже существует';
+//                }
+//            }
+//        } else {
+//            $errors['email'] = 'Этот email должен быть заполнен!';
+//        }
+//
+//        // Валидация пароля
+//        if (isset($data['password']) && isset($data['psw'])) {
+//            $password = $data['password'];
+//            $passwordRepeat = $data['psw'];
+//
+//            if (strlen($password) < 5) {
+//                $errors['password'] = 'пароль не должен быть меньше 5 символов';
+//            }
+//
+//            if ($password !== $passwordRepeat) {
+//                $errors['psw'] = 'Пароли не совпадают!';
+//            }
+//        } else {
+//            if (!isset($data['password'])) {
+//                $errors['password'] = 'Пароль должен быть заполнен!';
+//            }
+//            if (!isset($data['psw'])) {
+//                $errors['psw'] = 'Подтверждение пароля должно быть заполнено!';
+//            }
+//        }
+//
+//        return $errors;
+//    }
+
     private function validateRegistrate(array $data): array
     {
         $errors = [];
@@ -67,7 +122,6 @@ class UserController
             $errors['name'] = $errorName;
         }
 
-        // Валидация email
         if (isset($data['email'])) {
             $email = $data['email'];
             if (strlen($email) < 3) {
@@ -75,11 +129,10 @@ class UserController
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors['email'] = 'incorrect email';
             } else {
-                // Проверяем, существует ли email в базе данных
-                $exitUser = $this->userModel->ValidateCountRegistrate($email);
 
-                 require_once '../Views/registration_form.php';
-                if ($exitUser !== false) {
+                $user = $this->userModel->ValidateCountRegistrate($email);
+
+                if ($user !== false) {
                     $errors['email'] = 'Этот email уже существует';
                 }
             }
@@ -87,27 +140,20 @@ class UserController
             $errors['email'] = 'Этот email должен быть заполнен!';
         }
 
-        // Валидация пароля
-        if (isset($data['password']) && isset($data['psw'])) {
-            $password = $data['password'];
-            $passwordRepeat = $data['psw'];
-
+        if (isset($data['password'])) {
+            $password = $user->getPassword();
+//            $password = $data['password'];
             if (strlen($password) < 5) {
                 $errors['password'] = 'пароль не должен быть меньше 5 символов';
             }
 
+            $passwordRepeat = $user->getPswPassword();
             if ($password !== $passwordRepeat) {
                 $errors['psw'] = 'Пароли не совпадают!';
             }
         } else {
-            if (!isset($data['password'])) {
-                $errors['password'] = 'Пароль должен быть заполнен!';
-            }
-            if (!isset($data['psw'])) {
-                $errors['psw'] = 'Подтверждение пароля должно быть заполнено!';
-            }
+            $errors['psw'] = 'Пароль должен быть заполнен!';
         }
-
         return $errors;
     }
 
@@ -123,65 +169,6 @@ class UserController
             return 'имя должно быть заполнено';
         }
     }
-
-//    private function validateRegistrate(array $data): array
-//    {
-//        $errors = [];
-//
-//        $errorName = $this->validateName($data);
-//
-//        if (!empty($errorName)) {
-//            $errors['name'] = $errorName;
-//        }
-//
-//        if (isset($data['email'])) {
-//            $email = $data['email'];
-//            if (strlen($email) < 3) {
-//                $errors['email'] = "Email не может содержать меньше 3 символов";
-//            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-//                $errors['email'] = 'incorrect email';
-//            } else {
-//
-//                $user = $this->userModel->ValidateCountRegistrate($email);
-//                require_once '../Views/registration_form.php';
-//
-//                if ($user !== false) {
-//                    $errors['email'] = 'Этот email уже существует';
-//                }
-//            }
-//        } else {
-//            $errors['email'] = 'Этот email должен быть заполнен!';
-//        }
-//
-//        if (isset($data['password'])) {
-////            $password = $user->getPassword();
-//            $password = $data['password'];
-//            if (strlen($password) < 5) {
-//                $errors['password'] = 'пароль не должен быть меньше 5 символов';
-//            }
-//
-//            $passwordRepeat = $user->getPswPassword();
-//            if ($password !== $passwordRepeat) {
-//                $errors['psw'] = 'Пароли не совпадают!';
-//            }
-//        } else {
-//            $errors['psw'] = 'Пароль должен быть заполнен!';
-//        }
-//        return $errors;
-//    }
-
-//    private function validateName(array $data): null|string
-//    {
-//        if (isset($data['name'])) {
-//            $name = $data['name'];
-//            if (strlen($name) < 3) {
-//                return 'имя не может содержать меньше 3 символов';
-//            }
-//            return null;
-//        } else {
-//            return 'имя должно быть заполнено';
-//        }
-//    }
 
 
     public function getLogin()

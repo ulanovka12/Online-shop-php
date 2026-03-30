@@ -11,19 +11,19 @@
           <a href="#">
               <div class="card-header">
               </div>
-              <img class="card-img-top" src="<?php echo $product['image_url'];?>" alt="Card image">
+              <img class="card-img-top" src="<?php echo $product->image_irl; ?>" alt="Card image">
               <div class="card-body">
-                  <p class="card-text text-muted"><?php echo $product['name'];?></p>
-                  <a href="#"><h5 class="card-title"><?php echo $product['description'];?></h5></a>
+                  <p class="card-text text-muted"><?php echo $product->name;?></p>
+                  <a href="#"><h5 class="card-title"><?php  echo $product->description ?></h5></a>
                   <div class="card-footer">
-                      <?php echo $product['price'];?>
+                      <?php echo $product->price;?>
                   </div>
               </div>
               <form action="/add-product" method="POST">
                   <div class="container">
                       <h1>AddProduct</h1>
 
-                      <input type="hidden" placeholder="Enter product_id" name="product_id" value="<?php echo $product['id']; ?>" id="product_id" required>
+                      <input type="hidden" placeholder="Enter product_id" name="product_id" value="<?php echo $product->id; ?>" id="product_id" required>
 
                       <label for="amount"><b>Amount</b></label>
                       <?php if (isset($errors['amount'])): ?>

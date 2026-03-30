@@ -8,6 +8,7 @@ class Product extends Model
     private string $name;
     private string $description;
     private string $price;
+    private string $image_url;
 //    public function getAll(): array|false
 //    {
 //
@@ -20,33 +21,31 @@ class Product extends Model
 //
 //        return $products;
 //    }
-    public function getAll(): array|false
+    public function getAll(): self|null
     {
         $stmt = $this->pdo->query("SELECT * FROM products");
-        $productsData = $stmt->fetchAll();
+        $products = $stmt->fetchAll();
 
-        if ($productsData === false) {
-            return false;
+        if ($products === false) {
+            return null;
         }
 
-        $products = [];
-        foreach ($productsData as $productData) {
+//        $products = [];
+
+        foreach ($products as $row) {
             $obj = new self();
-
-            // Заполняем свойства объекта
-            $obj->id = (int)$productData['id'];
-            $obj->name = (string)$productData['name'];
-            $obj->price = (float)$productData['price'];
-            $obj->description = (string)$productData['description'];
-
-            $products[] = $product;
+            $obj->image_url = (string) $row['image_url'];
+            $obj->id = (int)$row['id'];
+            $obj->name = (string)$row['name'];
+            $obj->price = (int)$row['price'];
+            $obj->description = (string)$row['description'];
         }
 
-        return $products;
+        return $obj;
     }
 
 
-    public function getByProductId(int $userId, int $productId)
+    public function getByProductId(int $userId, int $productId): array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE product_id = :productId AND user_id = :userId");
         $stmt->execute(['productId' => $productId, 'userId' => $userId]);
@@ -102,6 +101,10 @@ class Product extends Model
     }
 
     public function getPrice(): string
+    {
+        return $this->price;
+    }
+    public function getImage_url(): string
     {
         return $this->price;
     }

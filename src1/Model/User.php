@@ -20,7 +20,6 @@ class User extends Model
         $result = $stmt->fetch();
 
         return $result;
-
     }
 
     public function getByUsername(string $name, string $email, string $password): array|false
@@ -55,7 +54,6 @@ class User extends Model
     }
     public function ValidateCountRegistrate(string $email): self|null
     {
-        // ВАЖНО: используем SELECT *, а не COUNT(*)
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
