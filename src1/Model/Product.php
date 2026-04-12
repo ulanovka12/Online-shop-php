@@ -7,8 +7,11 @@ class Product extends Model
     private int $id;
     private string $name;
     private string $description;
-    private string $price;
+    private int $price;
     private string $image_url;
+
+    private int $amount;
+
 //    public function getAll(): array|false
 //    {
 //
@@ -33,6 +36,7 @@ class Product extends Model
         $product = [];
 
         foreach ($products as $row) {
+
             $obj = new self();
 
             $obj->id = $row['id'];
@@ -48,16 +52,25 @@ class Product extends Model
     }
 
 
-    public function getByProductId(int $userId, int $productId): array
+    public function getByProductId(int $userId, int $productId): self|null
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE product_id = :productId AND user_id = :userId");
         $stmt->execute(['productId' => $productId, 'userId' => $userId]);
+
         $data = $stmt->fetch();
 
-        return $data;
+        $obj = new self();
+
+        $obj->id = $data['id'];
+        $obj->name = $data['name'];
+        $obj->description = $data['description'];
+        $obj->price = $data['price'];
+        $obj->image_url = $data['image_url'];
+
+        return $obj;
     }
 
-    public function getByProduct(int $userId,int $productId,int $amount): array
+    public function getByProduct(int $userId,int $productId,int $amount): self|null
     {
 
         $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:userId, :productId, :amount)");
@@ -65,15 +78,37 @@ class Product extends Model
 
         $data = $stmt->fetch();
 
-        return $data;
+        if($data === null){
+            return null;
+        }
+        $obj = new self();
+
+        $obj->amount = $data['amount'];
+        $obj->id =(int) $data['id'];
+        $obj->name = $data['name'];
+        $obj->description = $data['description'];
+        $obj->price = $data['price'];
+        $obj->image_url = $data['image_url'];
+        return $obj;
     }
-    public function getUpdateProduct(int $userId,int $productId, int $newAmount):array
+    public function getUpdateProduct(int $userId,int $productId, int $newAmount):self|null
     {
 
         $stmt = $this->pdo->prepare("UPDATE user_products SET amount = :amount WHERE user_id = :userId and product_id = :productId");
         $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $newAmount]); // Используем $newAmount
         $data = $stmt->fetch();
-        return $data;
+
+        if($data === false){
+            return null;
+        }
+
+        $obj = new self();
+        $obj->id = $data['id'];
+        $obj->name = $data['name'];
+        $obj->description = $data['description'];
+        $obj->price = $data['price'];
+        $obj->image_url = $data['image_url'];
+        return $obj;
     }
 
     public function ValidateProductData(int $productId): array
@@ -110,6 +145,10 @@ class Product extends Model
     public function getImage_url(): string
     {
         return $this->image_url;
+    }
+    public function getAmount(): int
+    {
+        return $this->amount;
     }
 
 }

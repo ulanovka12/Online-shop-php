@@ -10,8 +10,10 @@ class User extends Model
     private string $name;
     private string $email;
     private string $password;
+    private ?string $psw = null;
+    private string $image_url = '';
 
-    public function getByEmail(string $email): array|false
+    public function getByEmail(string $email): self|null
     {
 
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
@@ -19,10 +21,20 @@ class User extends Model
 
         $result = $stmt->fetch();
 
-        return $result;
+        if ($result === false) {
+            return null;
+        }
+
+        $obj = new self();
+
+        $obj->name = $result['name'];
+        $obj->email = $result['email'];
+        $obj->password = $result['password'];
+
+        return $obj;
     }
 
-    public function getByUsername(string $name, string $email, string $password): array|false
+    public function getByUsername(string $name, string $email, string $password): self|null
     {
 
         $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
@@ -30,7 +42,17 @@ class User extends Model
 
         $result = $stmt->fetch();
 
-        return $result;
+        if ($result === false) {
+            return null;
+        }
+
+        $obj = new self();
+
+        $obj->name = $result['name'];
+        $obj->email = $result['email'];
+        $obj->password = $result['password'];
+
+        return $obj;
     }
 
     public function getByEmailLogin(string $username) : self|null
@@ -45,10 +67,11 @@ class User extends Model
         }
 
         $obj = new self();
-        $obj->id = $user['id'];
-        $obj->name = $user['name'];
+
         $obj->email = $user['email'];
         $obj->password = $user['password'];
+        $obj->id = $user['id'];
+
 
         return $obj;
     }
@@ -63,13 +86,8 @@ class User extends Model
             return null;
         }
 
-        // Для отладки: посмотрим что возвращает запрос
-        // var_dump($user); exit; // Раскомментируйте для проверки
-
-        // Создаем объект пользователя
         $obj = new self();
 
-        // Проверяем наличие ключей перед присвоением
         $obj->id = isset($user['id']) ? (int)$user['id'] : 0;
         $obj->name = isset($user['name']) ? (string)$user['name'] : '';
         $obj->email = isset($user['email']) ? (string)$user['email'] : '';
@@ -77,27 +95,6 @@ class User extends Model
 
         return $obj;
     }
-//    public function ValidateCountRegistrate(string $email):self|null
-//    {
-//
-//        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
-//        $stmt->execute(['email' => $email]);
-//        $user = $stmt->fetch();
-//
-//        if ($user === false)
-//        {
-//            return null;
-//        }
-//
-//        $obj = new self();
-//        $obj->id = (int)$user['id'];
-//        $obj->name = (string)$user['name'];
-//        $obj->email = (string)$user['email'];
-//        $obj->password = (string)$user['password'];
-//
-//        return $obj;
-//
-//    }
     public function getByIdProfile(int $userId): self|null
     {
 
@@ -110,10 +107,11 @@ class User extends Model
         }
 
         $obj = new self();
-        $obj->id = (int)$user['id'];
-        $obj->name = (string)$user['name'];
-        $obj->email = (string)$user['email'];
-        $obj->password = (string)$user['password'];
+
+        $obj->id = $user['id'];
+        $obj->name = $user['name'];
+        $obj->email = $user['email'];
+        $obj->password = $user['password'];
 
         return $obj;
     }
@@ -139,7 +137,11 @@ class User extends Model
     }
     public function getPswPassword(): string
     {
-        return $this->password;
+        return $this->psw;
+    }
+    public function getImage(): string
+    {
+        return $this->image_url;
     }
 
 

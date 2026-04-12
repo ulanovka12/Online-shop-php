@@ -1,6 +1,6 @@
 <form action="/add-product" method="POST">
     <div class="container">
-        <h1>AddProduct</h1>
+        <h1>Добавление продукта</h1>
 
         <label for="name"><b>Product-id</b></label>
         <?php if (isset($errors['product_id'])): ?>
@@ -15,7 +15,7 @@
         <?php endif; ?>
         <input placeholder="Enter amount" name="amount" id="amount" required>
 
-        <button type="submit" class="registerbtn">addProduct</button>
+        <button type="submit" class="registerbtn">Добавить продукт</button>
     </div>
 
     <div class="container signin">
@@ -56,7 +56,7 @@
         background-color: #04AA6D;
         color: white;
         padding: 20px 20px;
-        margin: 8px 0;
+        margin: 50px 0;
         border: none;
         cursor: pointer;
         width: 100%;

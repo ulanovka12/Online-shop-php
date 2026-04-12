@@ -3,12 +3,12 @@
 
         <!-- here’s the avatar -->
         <a target="_blank" href="/profile-change">
-            <img src = "<?php echo $user['image_url'] ?>" class="hoverZoomLink">
+            <img src = "<?php echo $user->getImage() ?>" class="hoverZoomLink">
         </a>
 
         <!-- the username -->
         <h1>
-            <label for="name"><b><?php echo ($user['name']); ?></b></label>
+            <label for="name"><b><?php echo $user->getName(); ?></b></label>
         </h1>
 
         <!-- and role or location -->

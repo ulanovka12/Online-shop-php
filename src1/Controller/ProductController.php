@@ -48,13 +48,15 @@ class ProductController
             $productId = $_POST['product_id'];
             $amount = $_POST['amount'];
 
-            $productId = (int)$productId;
+//            $productId = (int)$productId;
+
             $data = $this->productModel->getByProductId($userId, $productId);
 
             if ($data === false) {
                 $this->productModel->getByProduct($userId,$productId,$amount);
             } else {
-                $newAmount = $data['amount'] + $amount;
+//                $newAmount = $data['amount'] + $amount;
+                $newAmount = $amount + $data->getAmount();
 
                 $this->productModel->getUpdateProduct($userId, $productId, $newAmount);
             }

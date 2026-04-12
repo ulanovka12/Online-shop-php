@@ -9,7 +9,6 @@ class OrderController
 {
     private Order $OrderModel;
 
-
     public function __construct()
     {
         $this->OrderModel = new Order();

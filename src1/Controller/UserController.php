@@ -49,7 +49,7 @@ class UserController
 
 
             $result = $this->userModel->getByUsername($name, $email, $password);
-//            print_r($result);
+            print_r($result);
 
             $result = $this->userModel->getByEmail($email);
 
@@ -121,7 +121,6 @@ class UserController
         if (!empty($errorName)) {
             $errors['name'] = $errorName;
         }
-
         if (isset($data['email'])) {
             $email = $data['email'];
             if (strlen($email) < 3) {
@@ -141,13 +140,14 @@ class UserController
         }
 
         if (isset($data['password'])) {
-            $password = $user->getPassword();
-//            $password = $data['password'];
+//            $password = $user->getPassword();
+            $password = $data['password'];
             if (strlen($password) < 5) {
                 $errors['password'] = 'пароль не должен быть меньше 5 символов';
             }
 
-            $passwordRepeat = $user->getPswPassword();
+//            $passwordRepeat = $user->getPswPassword();
+            $passwordRepeat = $data['psw'];
             if ($password !== $passwordRepeat) {
                 $errors['psw'] = 'Пароли не совпадают!';
             }
@@ -192,6 +192,8 @@ class UserController
             // EMAIL LOGIN
             $user = $this->userModel->getByEmailLogin($username);
 
+//            print_r($user);
+
             if (!empty($user)) {
                 //$passwordDb = $user['password'];
                 $passwordDb = $user->getPassword();
@@ -235,7 +237,7 @@ class UserController
 
             $user = $this->userModel->getByIdProfile($userId);
 
-            print_r($user);
+//            print_r($user);
 
             require_once '../Views/profile_form.php';
         } else {
