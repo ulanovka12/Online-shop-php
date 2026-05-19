@@ -64,10 +64,6 @@ class ProductController
             exit();
         }
         require_once '../Views/add_product_form.php';
-//        // Если есть ошибки, можно вернуть их или обработать
-//        //return $errors;
-//        print_r($errors);
-//        exit();
     }
 
     private function validateProduct($data) // параметр $data
@@ -78,10 +74,6 @@ class ProductController
 
             $productId = (int)$data['product_id'];
             $productData = $this->productModel->ValidateProductData($productId);
-
-
-            //            print_r($productData);
-            // Изменил имя переменной чтобы не конфликтовало
 
             $productData = (int)$productData;
 
@@ -105,6 +97,8 @@ class ProductController
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
+
+        require_once '../Views/catalog_page.php';
 
         if (!isset($_SESSION["userId"])) {
             header('Location: /login');

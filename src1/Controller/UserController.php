@@ -4,18 +4,6 @@ namespace Controller;
 
 use Model\User;
 
-//// cache_clear.php
-//if (function_exists('opcache_reset')) {
-//    opcache_reset();
-//    echo "OpCache очищен<br>";
-//}
-//if (function_exists('apc_clear_cache')) {
-//    apc_clear_cache();
-//    echo "APC очищен<br>";
-//}
-//
-//echo "Готово. Теперь обновите страницу /profile";
-
 class UserController
 {
 
@@ -29,7 +17,7 @@ class UserController
     public function getRegistrate()
     {
         session_start();
-        if (!isset($_SESSION['userId'])) {
+        if (isset($_SESSION['userId'])) {
             header('Location: /login');
         }
         require_once '../Views/registration_form.php';
@@ -39,7 +27,8 @@ class UserController
     {
         $errors = $this->validateRegistrate($_POST);
 
-        if (!empty($errors)) {
+        if (empty($errors)) {
+
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -129,9 +118,9 @@ class UserController
                 $errors['email'] = 'incorrect email';
             } else {
 
-                $user = $this->userModel->ValidateCountRegistrate($email);
+                $user = $this->userModel->getByEmail($email);
 
-                if ($user !== false) {
+                if ($user !== null) {
                     $errors['email'] = 'Этот email уже существует';
                 }
             }
@@ -186,30 +175,31 @@ class UserController
         $errors = $this->validateLogin($_POST);
 
         if (empty($errors)) {
-            $username = $_POST['username'];
+            $email = $_POST['username'];
             $password = $_POST['password'];
 
             // EMAIL LOGIN
-            $user = $this->userModel->getByEmailLogin($username);
+            $user = $this->userModel->getByEmail($email);
 
 //            print_r($user);
 
             if (!empty($user)) {
-                //$passwordDb = $user['password'];
                 $passwordDb = $user->getPassword();
+                session_start();
+
 
                 if (password_verify($password, $passwordDb)) {
-                    session_start();
                     $_SESSION['userId'] = $user->getId();
                     header('Location: /catalog');
-                    exit(); //  exit после header
+                    exit();
                 } else {
                     $errors['password'] = 'пароль или логин указан неверно';
+                    return $errors;
                 }
             } else {
                 $errors['username'] = 'Пользователя с таким логином не существует';
+                return $errors;
             }
-            return $errors;
         }
         require_once '../Views/login_form.php';
     }

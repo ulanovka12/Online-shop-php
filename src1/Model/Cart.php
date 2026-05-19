@@ -16,7 +16,7 @@ class Cart extends Model
 
     public function ForGetCart(int $productId): array
     {
-        // Используем подготовленный запрос
+
         $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
         $stmt->execute(['productId' => $productId]);
         $product = $stmt->fetch();

@@ -11,7 +11,6 @@ class Model
 
     public function __construct()
     {
-        $this->pdo = new PDO('pgsql:host=postgres;dbname=mydb', 'king', 'qwerty');
+        $this->pdo = new PDO('pgsql:host=postgres; port=5432;dbname=mydb', 'king', 'qwerty');
     }
-
 }
