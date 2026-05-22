@@ -17,7 +17,7 @@ class UserController
     public function getRegistrate()
     {
         session_start();
-        if (isset($_SESSION['userId'])) {
+        if (!isset($_SESSION['userId'])) {
             header('Location: /login');
         }
         require_once '../Views/registration_form.php';
@@ -129,13 +129,10 @@ class UserController
         }
 
         if (isset($data['password'])) {
-//            $password = $user->getPassword();
             $password = $data['password'];
             if (strlen($password) < 5) {
                 $errors['password'] = 'пароль не должен быть меньше 5 символов';
             }
-
-//            $passwordRepeat = $user->getPswPassword();
             $passwordRepeat = $data['psw'];
             if ($password !== $passwordRepeat) {
                 $errors['psw'] = 'Пароли не совпадают!';
@@ -178,17 +175,15 @@ class UserController
             $email = $_POST['username'];
             $password = $_POST['password'];
 
-            // EMAIL LOGIN
             $user = $this->userModel->getByEmail($email);
-
+//
 //            print_r($user);
 
             if (!empty($user)) {
                 $passwordDb = $user->getPassword();
-                session_start();
-
 
                 if (password_verify($password, $passwordDb)) {
+                    session_start();
                     $_SESSION['userId'] = $user->getId();
                     header('Location: /catalog');
                     exit();

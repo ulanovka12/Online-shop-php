@@ -44,6 +44,7 @@ class Product extends Model
             $obj->description = $row['description'];
             $obj->price = $row['price'];
             $obj->image_url = $row['image_url'];
+            $obj->amount = $row['amount'];
 
             $product[] = $obj;
         }
@@ -59,6 +60,10 @@ class Product extends Model
 
         $data = $stmt->fetch();
 
+        if (!$data) {
+            return null;
+        }
+
         $obj = new self();
 
         $obj->id = $data['id'];
@@ -66,6 +71,7 @@ class Product extends Model
         $obj->description = $data['description'];
         $obj->price = $data['price'];
         $obj->image_url = $data['image_url'];
+        $obj->amount = $data['amount'];
 
         return $obj;
     }
@@ -83,19 +89,19 @@ class Product extends Model
         }
         $obj = new self();
 
-        $obj->amount = $data['amount'];
-        $obj->id =(int) $data['id'];
+        $obj->id = $data['id'];
         $obj->name = $data['name'];
         $obj->description = $data['description'];
         $obj->price = $data['price'];
         $obj->image_url = $data['image_url'];
+        $obj->amount = $data['amount'];
         return $obj;
     }
     public function getUpdateProduct(int $userId,int $productId, int $newAmount):self|null
     {
 
         $stmt = $this->pdo->prepare("UPDATE user_products SET amount = :amount WHERE user_id = :userId and product_id = :productId");
-        $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $newAmount]); // Используем $newAmount
+        $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $newAmount]);
         $data = $stmt->fetch();
 
         if($data === false){
@@ -108,6 +114,7 @@ class Product extends Model
         $obj->description = $data['description'];
         $obj->price = $data['price'];
         $obj->image_url = $data['image_url'];
+        $obj->amount = $data['amount'];
         return $obj;
     }
 

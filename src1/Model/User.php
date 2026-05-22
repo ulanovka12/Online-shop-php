@@ -39,7 +39,7 @@ class User extends Model
     public function getByUsername(string $name, string $email, string $password): self|null
     {
 
-        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password) RETURNING id, name, email, password, image_url");
         $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password]);
 
         $result = $stmt->fetch();
@@ -52,72 +52,13 @@ class User extends Model
 
         $obj->id = $result['id'];
         $obj->name = $result['name'];
-        $obj->email = $result['email'];
-        $obj->password = $result['password'];
+        $obj->email =  $result['email'];
+        $obj->password =  $result['password'];
+        $obj->image_url = $result['image_url'];
 
         return $obj;
     }
 
-//    public function getByEmail(string $email ): self|null
-//    {
-//        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-//        $stmt->execute(['email' => $email]);
-//        $user = $stmt->fetch();
-//
-//        if ($user === false){
-//            return null;
-//        }
-//
-//        $obj = new self();
-//
-//        $obj->id = $user['id'];
-//        $obj->name = $user['name'];
-//        $obj->email = $user['email'];
-//        $obj->password = $user['password'];
-//
-//
-//        return $obj;
-//    }
-//    public function getByEmailLogin(string $username) : self|null
-//    {
-//
-//        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-//        $stmt->execute(['email' => $username]);
-//        $user = $stmt->fetch();
-//
-//        if ($user === false){
-//            return null;
-//        }
-//
-//        $obj = new self();
-//
-//        $obj->id = $user['id'];
-//        $obj->name = $user['name'];
-//        $obj->email = $user['email'];
-//        $obj->password = $user['password'];
-//
-//
-//        return $obj;
-//    }
-//    public function ValidateCountRegistrate(string $email): self|null
-//    {
-//        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-//        $stmt->execute(['email' => $email]);
-//        $user = $stmt->fetch();
-//
-//        if ($user === false) {
-//            return null;
-//        }
-//
-//        $obj = new self();
-//
-//        $obj->id = $user['id'];
-//        $obj->name = $user['name'];
-//        $obj->email = $user['email'];
-//        $obj->password = $user['password'];
-//
-//        return $obj;
-//    }
     public function getByIdProfile(int $userId): self|null
     {
 

@@ -48,11 +48,11 @@ class ProductController
             $productId = $_POST['product_id'];
             $amount = $_POST['amount'];
 
-//            $productId = (int)$productId;
+            $productId = (int)$productId;
 
             $data = $this->productModel->getByProductId($userId, $productId);
 
-            if ($data === false) {
+            if ($data === null) {
                 $this->productModel->getByProduct($userId,$productId,$amount);
             } else {
 //                $newAmount = $data['amount'] + $amount;
@@ -66,7 +66,7 @@ class ProductController
         require_once '../Views/add_product_form.php';
     }
 
-    private function validateProduct($data) // параметр $data
+    private function validateProduct($data)
     {
         $errors = [];
 
@@ -98,15 +98,10 @@ class ProductController
             session_start();
         }
 
-        require_once '../Views/catalog_page.php';
-
-        if (!isset($_SESSION["userId"])) {
+        if (!isset($_SESSION['userId'])) {
             header('Location: /login');
             exit();
         }
-
-//        require_once '../Model/Product.php';
-//        $productModel = new Product();
 
         $products = $this->productModel->getAll();
 
