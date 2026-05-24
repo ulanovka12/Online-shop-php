@@ -44,7 +44,6 @@ class Product extends Model
             $obj->description = $row['description'];
             $obj->price = $row['price'];
             $obj->image_url = $row['image_url'];
-            $obj->amount = $row['amount'];
 
             $product[] = $obj;
         }
@@ -60,9 +59,10 @@ class Product extends Model
 
         $data = $stmt->fetch();
 
-        if (!$data) {
-            return null;
-        }
+
+//        if (!$data) {
+//            return null;
+//        }
 
         $obj = new self();
 
@@ -89,7 +89,6 @@ class Product extends Model
         }
         $obj = new self();
 
-        $obj->id = $data['id'];
         $obj->name = $data['name'];
         $obj->description = $data['description'];
         $obj->price = $data['price'];

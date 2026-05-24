@@ -120,26 +120,36 @@
 
     .card {
         max-width: 16rem;
+        width: 100%;
+        height: 100%; /* Растягиваем карточки */
+        display: flex;
+        flex-direction: column;
     }
 
-    .card:hover {
-        box-shadow: 1px 2px 10px lightgray;
-        transition: 0.2s;
+    /* Для изображений */
+    .card-img-top {
+        width: 100%;
+        height: 200px; /* Фиксированная высота */
+        object-fit: cover; /* Обрезает изображение, сохраняя пропорции */
+        object-position: center; /* Центрирует изображение */
     }
 
-    .card-header {
-        font-size: 13px;
-        color: gray;
-        background-color: white;
+    /* Для тела карточки - делаем его растягивающимся */
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .text-muted {
-        font-size: 11px;
+    /* Чтобы карточки в ряду были одинаковой высоты */
+    .card-deck {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
-    .card-footer{
-        font-weight: bold;
-        font-size: 18px;
-        background-color: white;
+    .card-deck .card {
+        flex: 1 0 auto;
+        min-width: 250px;
     }
 </style>

@@ -48,7 +48,7 @@ class ProductController
             $productId = $_POST['product_id'];
             $amount = $_POST['amount'];
 
-            $productId = (int)$productId;
+//            $productId = (int)$productId;
 
             $data = $this->productModel->getByProductId($userId, $productId);
 

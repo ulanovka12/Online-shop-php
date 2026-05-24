@@ -26,22 +26,18 @@ class CartController
 
         $userId = $_SESSION['userId'];
 
-//        require_once '../Model/Cart.php';
-//        $cartModel = new Cart();
-
         $userProducts = $this->cartModel->getByUserId($userId);
 
-        print_r($userId);
-        print_r($userProducts);
+//        print_r($userId);
+//        print_r($userProducts);
 
         $products = [];
 
         foreach ($userProducts as $userProduct) {
             $productId = $userProduct['product_id'];
 
-            // Получаем информацию о продукте
             $product = $this->cartModel->ForGetCart($productId);
-            print_r($product);
+//            print_r($product);
 
             if ($product) {
                 $product['amount'] = $userProduct['amount'];
@@ -50,7 +46,7 @@ class CartController
         }
 
         echo "Products: ";
-        print_r($products);
+//        print_r($products);
 
         require_once '../Views/cart.php';
 
