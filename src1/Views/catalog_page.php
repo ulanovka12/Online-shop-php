@@ -11,7 +11,7 @@
           <a href="#">
               <div class="card-header">
               </div>
-              <img class="card-img-top" src="<?php echo $product->getImage_url(); ?>" alt="Card image">
+              <img class="card-img-top" src="<?php echo $product->getImageUrl(); ?>" alt="Card image">
               <div class="card-body">
                   <p class="card-text text-muted"><?php echo $product->getName();?></p>
                   <a href="#"><h5 class="card-title"><?php  echo $product->getDescription() ?></h5></a>
@@ -46,12 +46,9 @@
 <style>
     * {box-sizing: border-box}
 
-    /* Add padding to containers */
     .container {
         padding: 16px;
     }
-
-    /* Full-width input fields */
     input[type=text], input[type=password] {
         width: 100%;
         padding: 15px;
@@ -66,13 +63,11 @@
         outline: none;
     }
 
-    /* Overwrite default styles of hr */
     hr {
         border: 1px solid #f1f1f1;
         margin-bottom: 25px;
     }
 
-    /* Set a style for the submit/register button */
     .registerbtn {
         background-color: #04AA6D;
         color: white;
@@ -88,12 +83,11 @@
         opacity:1;
     }
 
-    /* Add a blue text color to links */
     a {
         color: dodgerblue;
     }
 
-    /* Set a grey background color and center the text of the "sign in" section */
+
     .signin {
         background-color: #f1f1f1;
         text-align: center;
@@ -126,7 +120,6 @@
         flex-direction: column;
     }
 
-    /* Для изображений */
     .card-img-top {
         width: 100%;
         height: 200px; /* Фиксированная высота */
@@ -134,7 +127,6 @@
         object-position: center; /* Центрирует изображение */
     }
 
-    /* Для тела карточки - делаем его растягивающимся */
     .card-body {
         flex: 1;
         display: flex;

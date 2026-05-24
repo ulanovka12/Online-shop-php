@@ -61,7 +61,6 @@ class OrderController
     {
         $errors = [];
 
-        // Валидация имени
         $contactName = $this->validateName($data);
         if (!empty($contactName)) {
             $errors['contact_name'] = $contactName;
@@ -71,7 +70,6 @@ class OrderController
         if (isset($data['contact_phone'])) {
             $contactPhone = $data['contact_phone'];
 
-            // Проверяем, что строка содержит только цифры
             if (!ctype_digit($contactPhone)) {
                 $errors['contact_phone'] = 'Телефон должен содержать только цифры';
             } elseif (strlen($contactPhone) < 10) {

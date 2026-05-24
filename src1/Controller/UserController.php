@@ -176,7 +176,7 @@ class UserController
             $password = $_POST['password'];
 
             $user = $this->userModel->getByEmail($email);
-//
+
 //            print_r($user);
 
             if (!empty($user)) {

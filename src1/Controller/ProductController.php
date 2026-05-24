@@ -3,15 +3,18 @@
 namespace Controller;
 
 use Model\Product;
+use Model\user_products;
 
 class ProductController
 {
 
     private Product $productModel;
+    private User_Products $user_productsModel;
 
     public function __construct()
     {
         $this->productModel = new Product();
+        $this->user_productsModel = new user_products();
     }
 
     public function getProducts()
@@ -33,13 +36,6 @@ class ProductController
             session_start();
         }
 
-//        var_dump([
-//            'session_id' => session_id(),
-//            'cookie' => $_COOKIE['PHPSESSID'] ?? null,
-//            'session' => $_SESSION ?? null,
-//        ]);
-//        exit;
-
         $errors = $this->validateProduct($_POST); // Передаем $_POST в метод
 
         if (empty($errors)) {
@@ -48,17 +44,21 @@ class ProductController
             $productId = $_POST['product_id'];
             $amount = $_POST['amount'];
 
-//            $productId = (int)$productId;
-
-            $data = $this->productModel->getByProductId($userId, $productId);
+            $data = $this->user_productsModel->getByProductId($userId, $productId);
 
             if ($data === null) {
-                $this->productModel->getByProduct($userId,$productId,$amount);
+                $this->user_productsModel->getByProduct($userId,$productId,$amount);
             } else {
 //                $newAmount = $data['amount'] + $amount;
                 $newAmount = $amount + $data->getAmount();
 
-                $this->productModel->getUpdateProduct($userId, $productId, $newAmount);
+                $result = $this->user_productsModel->getUpdateProduct($userId, $productId, $newAmount);
+//
+//                if ($result) {
+//                    echo 'Обновление успешно!';
+//                } else {
+//                    echo 'Обновление неуспешно!';
+//                }
             }
             header("Location: /catalog");
             exit();
@@ -73,9 +73,10 @@ class ProductController
         if (isset($data['product_id'])) {
 
             $productId = (int)$data['product_id'];
+
             $productData = $this->productModel->ValidateProductData($productId);
 
-            $productData = (int)$productData;
+//            $productData = (int)$productData;
 
             if ($productData === false) {
                 $errors['product_id'] = 'Продукт не найден';

@@ -123,7 +123,6 @@
         padding-top: 80px;
     }
 
-    /* Стили для одинаковых карточек */
     .card {
         height: 100%;
         transition: transform 0.2s;
@@ -150,7 +149,6 @@
         width: 100%;
     }
 
-    /* Стили для таблицы корзины */
     .table td {
         vertical-align: middle;
     }
