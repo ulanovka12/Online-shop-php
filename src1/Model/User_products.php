@@ -2,7 +2,7 @@
 
 namespace Model;
 
-class user_products extends Model
+class User_products extends Model
 {
 
     private int $id;
@@ -36,7 +36,7 @@ class user_products extends Model
     public function getByProduct(int $userId,int $productId,int $amount): self|null
     {
 
-        $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:userId, :productId, :amount) RETURNING user_id, product_id, amount");
+        $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:userId, :productId, :amount) RETURNING id, user_id, product_id, amount");
         $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $amount]);
 
         $data = $stmt->fetch();
@@ -53,8 +53,7 @@ class user_products extends Model
 
     public function getUpdateProduct(int $userId,int $productId, int $newAmount):self|null
     {
-
-        $stmt = $this->pdo->prepare("UPDATE user_products SET amount = :amount WHERE user_id = :userId and product_id = :productId");
+        $stmt = $this->pdo->prepare("UPDATE user_products SET amount = :amount WHERE user_id = :userId and product_id = :productId RETURNING id, user_id, product_id, amount");
 
         $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $newAmount]);
 

@@ -3,7 +3,7 @@
 namespace Controller;
 
 use Model\Product;
-use Model\user_products;
+use Model\User_products;
 
 class ProductController
 {
@@ -14,7 +14,7 @@ class ProductController
     public function __construct()
     {
         $this->productModel = new Product();
-        $this->user_productsModel = new user_products();
+        $this->user_productsModel = new User_products();
     }
 
     public function getProducts()
@@ -52,7 +52,7 @@ class ProductController
 //                $newAmount = $data['amount'] + $amount;
                 $newAmount = $amount + $data->getAmount();
 
-                $result = $this->user_productsModel->getUpdateProduct($userId, $productId, $newAmount);
+                $this->user_productsModel->getUpdateProduct($userId, $productId, $newAmount);
 //
 //                if ($result) {
 //                    echo 'Обновление успешно!';

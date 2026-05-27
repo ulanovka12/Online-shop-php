@@ -37,16 +37,26 @@ class Product extends Model
         return $product;
     }
 
-    public function ValidateProductData(int $productId): array
+    public function ValidateProductData(int $productId): ?self
     {
         $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
         $stmt->execute(['productId' => $productId]);
         $productData = $stmt->fetch();
 
-        if ($productData === false) {
-            return [];
+
+        if ($productData === null || $productData === false) {
+            return null;
         }
-        return $productData;
+
+        $obj = new self();
+
+        $obj->id = $productData['id'];
+        $obj->name = $productData['name'];
+        $obj->description = $productData['description'];
+        $obj->price = $productData['price'];
+        $obj->image_url = $productData['image_url'];
+
+        return $obj;
     }
 
 
