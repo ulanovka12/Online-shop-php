@@ -3,15 +3,21 @@
 namespace Controller;
 
 use Model\Order;
+use Model\User_products;
+use Model\Order_products;
 
 
 class OrderController
 {
     private Order $OrderModel;
+    private User_products $user_productsModel;
+    private Order_products $order_productsModel;
 
     public function __construct()
     {
         $this->OrderModel = new Order();
+        $this->user_productsModel = new User_products();
+        $this->order_productsModel = new Order_products();
     }
 
 
@@ -41,18 +47,21 @@ class OrderController
 
             $orderId = $this->OrderModel->create($contactName, $contactPhone, $comment, $address, $userId);
 
+            //????????????????????????????//
 
-            $userProducts = $this->OrderModel->getAllByUserId($userId);
+            $userProducts = $this->user_productsModel->getAllByUserId($userId);
 
             foreach ($userProducts as $userProduct) {
 
+//                $orderId = $userProduct->getOrderId;  ??????????????????????????????/
                 $productId = $userProduct['product_id'];
                 $amount = $userProduct['amount'];
 
-                $this->OrderModel->create1($orderId, $productId, $amount);
+                $this->order_productsModel->create1($orderId, $productId, $amount);
 
+                //?????????
             }
-           $this->OrderModel->deleteByUserId($userId);
+           $this->user_productsModel->deleteByUserId($userId);
         }else{
             require_once './../Views/order_form.php';
         }

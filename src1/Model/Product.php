@@ -9,14 +9,15 @@ class Product extends Model
     private string $description;
     private int $price;
     private string $image_url;
+    private ?int $amount = null;
 
-    public function getAll(): array|null
+    public function getAll(): array
     {
         $stmt = $this->pdo->query("SELECT * FROM products");
         $products = $stmt->fetchAll();
 
-        if ($products === null) {
-            return null;
+        if ($products === false || count($products) === 0) {
+            return [];
         }
 
         $product = [];
@@ -37,7 +38,7 @@ class Product extends Model
         return $product;
     }
 
-    public function ValidateProductData(int $productId): ?self
+    public function ValidateProductData(int $productId): self|null
     {
         $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
         $stmt->execute(['productId' => $productId]);
@@ -55,6 +56,24 @@ class Product extends Model
         $obj->description = $productData['description'];
         $obj->price = $productData['price'];
         $obj->image_url = $productData['image_url'];
+
+        return $obj;
+    }
+
+    public function ForGetCart(int $productId): self|null
+    {
+
+        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
+        $stmt->execute(['productId' => $productId]);
+        $product = $stmt->fetch();
+
+        $obj = new self();
+
+        $obj->id = $product['id'];
+        $obj->name = $product['name'];
+        $obj->description = $product['description'];
+        $obj->price = $product['price'];
+        $obj->image_url = $product['image_url'];
 
         return $obj;
     }
@@ -83,5 +102,14 @@ class Product extends Model
     public function getImageUrl(): string
     {
         return $this->image_url;
+    }
+    public function getAmount(): int
+    {
+        return $this->amount;
+    }
+    public function setAmount(int $amount): self
+    {
+        $this->amount = $amount;
+        return $this;
     }
 }

@@ -2,15 +2,18 @@
 
 namespace Controller;
 
-use Model\Cart;
+use Model\Product;
+use Model\User_products;
 
 class CartController
 {
-    private Cart $cartModel;
+    private Product $product;
+    private User_products $userProducts;
 
     public function __construct()
     {
-        $this->cartModel = new Cart();
+        $this->userProducts = new User_products();
+        $this->product = new Product();
     }
 
     public function cart()
@@ -26,7 +29,7 @@ class CartController
 
         $userId = $_SESSION['userId'];
 
-        $userProducts = $this->cartModel->getByUserId($userId);
+        $userProducts = $this->userProducts->getByUserId($userId);
 
 //        print_r($userId);
 //        print_r($userProducts);
@@ -36,17 +39,14 @@ class CartController
         foreach ($userProducts as $userProduct) {
             $productId = $userProduct['product_id'];
 
-            $product = $this->cartModel->ForGetCart($productId);
+            $product = $this->product->ForGetCart($productId);
 //            print_r($product);
 
             if ($product) {
-                $product['amount'] = $userProduct['amount'];
+                $product->setAmount($userProduct['amount']);
                 $products[] = $product;
             }
         }
-
-        echo "Products: ";
-//        print_r($products);
 
         require_once '../Views/cart.php';
 

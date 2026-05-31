@@ -69,6 +69,29 @@ class User_products extends Model
         return $obj;
     }
 
+    public function getByUserId(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
+        $stmt->execute(['userId' => $userId]);
+        $userProducts = $stmt->fetchAll();
+
+        return $userProducts;
+    }
+
+    public function getAllByUserId(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
+        $stmt->execute(['userId' => $userId]);
+        $userProducts = $stmt->fetchAll();
+
+        return $userProducts;
+    }
+    public function deleteByUserId(int $userId)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId");
+        $stmt->execute(['userId' => $userId]);
+    }
+
 
     public function getId(): int
     {
