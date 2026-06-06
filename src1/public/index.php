@@ -120,6 +120,7 @@ $app->addRoute('/add-product', 'GET', \Controller\ProductController::class, 'get
 $app->addRoute('/add-product', 'POST', \Controller\ProductController::class, 'Product');
 $app->addRoute('/create-order', 'GET', \Controller\OrderController::class, 'getCheckForm');
 $app->addRoute('/create-order', 'POST', \Controller\OrderController::class, 'handleCheckout');
+$app->addRoute('/users-orders', 'GET', \Controller\OrderController::class, 'getAllOrders');
 
 $app->run();
 

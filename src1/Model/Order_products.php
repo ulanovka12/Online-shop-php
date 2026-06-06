@@ -44,6 +44,13 @@ class Order_products extends Model
         return $this;
     }
 
+    public function getAllByOrderId(int $orderId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :orderId");
+        $stmt->execute(['orderId' => $orderId]);
+        $orderProducts = $stmt->fetchAll();
+        return $orderProducts;
+    }
     public function getId(): int
     {
         return $this->id;

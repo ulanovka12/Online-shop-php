@@ -49,16 +49,10 @@ class ProductController
             if ($data === null) {
                 $this->user_productsModel->getByProduct($userId,$productId,$amount);
             } else {
-//                $newAmount = $data['amount'] + $amount;
                 $newAmount = $amount + $data->getAmount();
 
                 $this->user_productsModel->getUpdateProduct($userId, $productId, $newAmount);
-//
-//                if ($result) {
-//                    echo 'Обновление успешно!';
-//                } else {
-//                    echo 'Обновление неуспешно!';
-//                }
+
             }
             header("Location: /catalog");
             exit();
@@ -76,7 +70,6 @@ class ProductController
 
             $productData = $this->productModel->ValidateProductData($productId);
 
-//            $productData = (int)$productData;
 
             if ($productData === false) {
                 $errors['product_id'] = 'Продукт не найден';

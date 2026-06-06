@@ -45,24 +45,24 @@ class OrderController
             $address = $_POST['address'];
             $userId = $_SESSION['userId'];
 
-            $orderId = $this->OrderModel->create($contactName, $contactPhone, $comment, $address, $userId);
+            $order = $this->OrderModel->create($contactName, $contactPhone, $comment, $address, $userId);
 
-            //????????????????????????????//
+            $orderId = $order->getId();
 
             $userProducts = $this->user_productsModel->getAllByUserId($userId);
 
             foreach ($userProducts as $userProduct) {
 
-//                $orderId = $userProduct->getOrderId;  ??????????????????????????????/
                 $productId = $userProduct['product_id'];
                 $amount = $userProduct['amount'];
 
                 $this->order_productsModel->create1($orderId, $productId, $amount);
 
-                //?????????
             }
            $this->user_productsModel->deleteByUserId($userId);
-        }else{
+
+
+        } else{
             require_once './../Views/order_form.php';
         }
     }
@@ -121,4 +121,32 @@ class OrderController
             return 'Имя должно быть заполнено';
         }
     }
+
+    public function getAllOrders()
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if (!isset($_SESSION['userId'])) {
+            header("Location: /login");
+            exit();
+        }
+        $userId = $_SESSION['userId'];
+
+        $userOrders = $this->user_productsModel->getAllByUserId($userId);
+
+        $newUserOrders = [];
+
+        foreach ($userOrders as $userOrder) {
+            $orderId = $userOrder['id'];
+
+            $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder['id']);
+
+            $userOrder['orderProducts'] = $ordersProducts;
+            $newUserOrders[] = $userOrder;
+        }
+        require_once '../Views/user_orders.php';
+
+    }
+
 }
