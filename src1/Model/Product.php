@@ -60,7 +60,7 @@ class Product extends Model
         return $obj;
     }
 
-    public function ForGetCart(int $productId): self|null
+    public function getOneById(int $productId): self|null
     {
 
         $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");

@@ -72,13 +72,13 @@ class App
                 'class' => OrderController::class,
                 'method' => 'handleCheckout',
             ],
-            '/users-order' => [
+        ],
+        '/users-order' => [
                 'GET' => [
                     'class' => OrderController::class,
                     'method' => 'getAllOrders',
                 ]
             ]
-        ],
     ];
 
 

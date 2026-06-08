@@ -37,7 +37,7 @@ class CartController
         foreach ($userProducts as $userProduct) {
             $productId = $userProduct['product_id'];
 
-            $product = $this->product->ForGetCart($productId);
+            $product = $this->product->getOneById($productId);
 //            print_r($product);
 
             if ($product) {

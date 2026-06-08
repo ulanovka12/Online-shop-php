@@ -3,6 +3,7 @@
 namespace Controller;
 
 use Model\Order;
+use Model\Product;
 use Model\User_products;
 use Model\Order_products;
 
@@ -12,12 +13,14 @@ class OrderController
     private Order $OrderModel;
     private User_products $user_productsModel;
     private Order_products $order_productsModel;
+    private Product $product;
 
     public function __construct()
     {
         $this->OrderModel = new Order();
         $this->user_productsModel = new User_products();
         $this->order_productsModel = new Order_products();
+        $this->product = new Product();
     }
 
 
@@ -136,17 +139,30 @@ class OrderController
         $userOrders = $this->user_productsModel->getAllByUserId($userId);
 
         $newUserOrders = [];
+        $newOrderProducts = [];
 
         foreach ($userOrders as $userOrder) {
             $orderId = $userOrder['id'];
 
             $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder['id']);
 
-            $userOrder['orderProducts'] = $ordersProducts;
-            $newUserOrders[] = $userOrder;
+            foreach ($ordersProducts as $orderProduct) {
+
+                $productId = $orderProduct['product_id'];
+                $product = $this->product->getOneById($productId);
+
+                $orderProduct['name'] = $product->getName();
+                $orderProduct['price'] = $product->getPrice();
+                $orderProduct['totalSum'] = $product->getPrice() * $orderProduct['amount'];
+
+                $newOrderProducts[] = $ordersProducts;
+
+            }
+
+            $userOrder['orderProducts'] = $newOrderProducts;
+
         }
         require_once '../Views/user_orders.php';
-
     }
 
 }
