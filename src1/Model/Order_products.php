@@ -51,6 +51,33 @@ class Order_products extends Model
         $orderProducts = $stmt->fetchAll();
         return $orderProducts;
     }
+
+    public function deleteByUserId(int $userId)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM order_products WHERE order_id = :orderId");
+        $stmt->execute(['userId' => $userId]);
+    }
+
+    public function getByAllOrderId(int $orderId): array
+{
+    $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :$orderId");
+    $stmt->execute(['orderId' => $orderId]);
+    $userProducts = $stmt->fetchAll();
+
+    $objects = [];
+    foreach ($userProducts as $userProduct) {
+        $obj = new self();
+
+        $this->id = $data['id'] ?? null;
+        $this->orderId = $data['order_id'] ?? null;
+        $this->productId = $data['product_id'] ?? null;
+        $this->amount = $data['amount'] ?? null;
+
+        $objects[] = $obj;
+    }
+    return $objects;
+}
+
     public function getId(): int
     {
         return $this->id;

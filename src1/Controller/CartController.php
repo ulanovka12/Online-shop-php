@@ -29,7 +29,7 @@ class CartController
 
         $userId = $_SESSION['userId'];
 
-        $userProducts = $this->userProducts->getByUserId($userId);
+        $userProducts = $this->userProducts->getAllByUserId($userId);
 //        print_r($userId);
 //        print_r($userProducts);
         $products = [];

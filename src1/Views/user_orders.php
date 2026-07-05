@@ -1,4 +1,4 @@
-<div class="user-orders">
+<div class="users-order">
     <div class="profile-nav">
         <a href="/profile" class="nav-link">👤 Мой профиль</a>
         <a href="/cart" class="nav-link">🛒 Добавить в корзину</a>
@@ -6,26 +6,26 @@
 
     <h3>📋 Мои заказы</h3>
 
-    <?php if (empty($newUserOrders)): ?>
+    <?php if (empty($resultOrders)): ?>
         <div class="empty-orders">
             <p>У вас пока нет заказов.</p>
             <a href="/catalog" class="btn-primary">Перейти в каталог</a>
         </div>
     <?php else: ?>
         <div class="orders-grid">
-            <?php foreach ($newUserOrders as $userOrder): ?>
+            <?php foreach ($resultOrders as $userOrder): ?>
                 <div class="order-card">
                     <div class="order-header">
-                        <h2>Заказ № <?php echo htmlspecialchars($userOrder['id']); ?></h2>
+                        <h2>Заказ № <?php echo htmlspecialchars($userOrder->getId()); ?></h2>
                         <span class="order-status">В обработке</span>
                     </div>
 
                     <div class="order-info">
-                        <p><strong>Получатель:</strong> <?php echo htmlspecialchars($userOrder['contact_name']); ?></p>
-                        <p><strong>Телефон:</strong> <?php echo htmlspecialchars($userOrder['contact_phone']); ?></p>
-                        <p><strong>Адрес:</strong> <?php echo htmlspecialchars($userOrder['address']); ?></p>
-                        <?php if (!empty($userOrder['comment'])): ?>
-                            <p><strong>Комментарий:</strong> <?php echo htmlspecialchars($userOrder['comment']); ?></p>
+                        <p><strong>Получатель:</strong> <?php echo htmlspecialchars($userOrder->getContactName()); ?></p>
+                        <p><strong>Телефон:</strong> <?php echo htmlspecialchars($userOrder->getContactPhone()); ?></p>
+                        <p><strong>Адрес:</strong> <?php echo htmlspecialchars($userOrder->getAddress()); ?></p>
+                        <?php if (!empty($userOrder->getComment())): ?>
+                            <p><strong>Комментарий:</strong> <?php echo htmlspecialchars($userOrder->getComment()); ?></p>
                         <?php endif; ?>
                     </div>
 
@@ -40,12 +40,11 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($userOrder['OrderProducts'] as $orderProduct): ?>
+                            <?php foreach ($userOrder->order_productsModel as $orderProduct): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($orderProduct['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($orderProduct['amount']); ?></td>
-                                    <td><?php echo number_format($orderProduct['price'], 2); ?> ₽</td>
-                                    <td><?php echo number_format($orderProduct['totalSum'], 2); ?> ₽</td>
+                                    <td><?php echo htmlspecialchars($orderProduct->getName()); ?></td>
+                                    <td><?php echo htmlspecialchars($orderProduct->getAmount()); ?></td>
+                                    <td><?php echo number_format($orderProduct->getPrice(), 2); ?> ₽</td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -53,7 +52,7 @@
                     </div>
 
                     <div class="order-footer">
-                        <p class="order-total">Итого: <span><?php echo number_format($userOrder['total'], 2); ?> ₽</span></p>
+                        <p class="order-total">Итого: <span><?php echo number_format($userOrder->totalSum, 2); ?> ₽</span></p>
                     </div>
                 </div>
             <?php endforeach; ?>

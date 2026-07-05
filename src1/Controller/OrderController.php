@@ -28,6 +28,7 @@ class OrderController
     {
         require_once './../Views/order_form.php';
     }
+
     public function handleCheckout()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -52,7 +53,7 @@ class OrderController
 
             $orderId = $order->getId();
 
-            $userProducts = $this->user_productsModel->getAllByUserId($userId);
+            $userProducts = $this->order_productsModel->getAllByOrderId($orderId);
 
             foreach ($userProducts as $userProduct) {
 
@@ -62,13 +63,14 @@ class OrderController
                 $this->order_productsModel->create1($orderId, $productId, $amount);
 
             }
-           $this->user_productsModel->deleteByUserId($userId);
+            $this->order_productsModel->deleteByUserId($userId);
 
 
-        } else{
+        } else {
             require_once './../Views/order_form.php';
         }
     }
+
     private function validate(array $data): array
     {
         $errors = [];
@@ -135,34 +137,72 @@ class OrderController
             exit();
         }
         $userId = $_SESSION['userId'];
+// исправил (!)
+        $userOrders = $this->order_productsModel->getByAllOrderId($orderId); //Исправить (работать только с таблицей order_products, orders)
 
-        $userOrders = $this->user_productsModel->getAllByUserId($userId);
-
-        $newUserOrders = [];
-        $newOrderProducts = [];
+//        var_dump($userId, $userOrders);
+//        exit;
+        $resultOrders = [];
 
         foreach ($userOrders as $userOrder) {
-            $orderId = $userOrder['id'];
+            $orderId = $userOrder->getId();
 
-            $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder['id']);
+            $orderProducts = $this->order_productsModel->getAllByOrderId($orderId);
 
-            foreach ($ordersProducts as $orderProduct) {
+            $newOrderProducts = [];
+            $orderTotal = 0;
+            foreach ($orderProducts as $orderProduct) {//проходимся по каждому товару внутри заказа
 
-                $productId = $orderProduct['product_id'];
+                $productId = $orderProduct->getProductId();
                 $product = $this->product->getOneById($productId);
+                if ($product !== null) {//если товап найден в бд,берем данные
+                    $orderProduct->name = $product->getName();
+                    $orderProduct->price = $product->getPrice();
+                    $orderProduct->totalSum = $orderProduct->getAmount() * $product->getPrice();
 
-                $orderProduct['name'] = $product->getName();
-                $orderProduct['price'] = $product->getPrice();
-                $orderProduct['totalSum'] = $product->getPrice() * $orderProduct['amount'];
+                    if (!isset($orderTotal)) {
+                        $orderTotal = 0;
+                    }
 
-                $newOrderProducts[] = $ordersProducts;
+                    $orderTotal += $orderProduct->totalSum;
 
+                    $newOrderProducts[] = $orderProduct;
+                }
             }
+            $userOrder->totalSum = $orderTotal;
 
-            $userOrder['orderProducts'] = $newOrderProducts;
+            $userOrder->order_productsModel = $newOrderProducts;
+
+            $resultOrders[] = $userOrder;
 
         }
         require_once '../Views/user_orders.php';
+//        $newUserOrders = [];
+//        $newOrderProducts = [];
+//
+//        foreach ($userOrders as $userOrder) {
+//            $orderId = $userOrder['id'];
+//
+//            $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder['id']);
+//
+//            foreach ($ordersProducts as $orderProduct) {
+//
+//                $productId = $orderProduct['product_id'];
+//                $product = $this->product->getOneById($productId);
+//
+//                $orderProduct['name'] = $product->getName();
+//                $orderProduct['price'] = $product->getPrice();
+//                $orderProduct['totalSum'] = $product->getPrice() * $orderProduct['amount'];
+//
+//                $newOrderProducts[] = $ordersProducts;
+//
+//            }
+//
+//            $userOrder['orderProducts'] = $newOrderProducts;
+//
+//        }
+//        require_once '../Views/user_orders.php';
+//    }
     }
 
 }

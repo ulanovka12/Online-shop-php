@@ -21,17 +21,16 @@
               </div>
               <form action="/add-product" method="POST">
                   <div class="container">
-                      <h1>AddProduct</h1>
 
                       <input type="hidden" placeholder="Enter product_id" name="product_id" value="<?php echo $product->getId(); ?>" id="product_id" required>
 
-                      <label for="amount"><b>Amount</b></label>
+                      <label for="amount"><b>Количество</b></label>
                       <?php if (isset($errors['amount'])): ?>
                           <label style="color: #ff0000"><?php echo $errors['amount']; ?></label>
                       <?php endif; ?>
-                      <input  placeholder="Enter amount" name="amount" id="amount" required>
+                      <input  placeholder="Введите количество" name="amount" id="amount" required>
 
-                      <button type="submit" class="registerbtn">AddProduct</button>
+                      <button type="submit" class="registerbtn">Добавить продукт</button>
 
                   </div>
               </form>

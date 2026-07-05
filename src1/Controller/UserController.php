@@ -17,7 +17,7 @@ class UserController
     public function getRegistrate()
     {
         session_start();
-        if (!isset($_SESSION['userId'])) {
+        if (isset($_SESSION['userId'])) {
             header('Location: /login');
         }
         require_once '../Views/registration_form.php';
@@ -189,11 +189,9 @@ class UserController
                     exit();
                 } else {
                     $errors['password'] = 'пароль или логин указан неверно';
-                    return $errors;
                 }
             } else {
                 $errors['username'] = 'Пользователя с таким логином не существует';
-                return $errors;
             }
         }
         require_once '../Views/login_form.php';
