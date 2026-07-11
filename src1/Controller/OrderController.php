@@ -4,23 +4,23 @@ namespace Controller;
 
 use Model\Order;
 use Model\Product;
-use Model\User_products;
 use Model\Order_products;
+use Model\User_products;
 
 
 class OrderController
 {
     private Order $OrderModel;
-    private User_products $user_productsModel;
     private Order_products $order_productsModel;
     private Product $product;
+    private User_products $userProducts;
 
     public function __construct()
     {
         $this->OrderModel = new Order();
-        $this->user_productsModel = new User_products();
         $this->order_productsModel = new Order_products();
         $this->product = new Product();
+        $this->userProducts = new User_products();
     }
 
 
@@ -53,7 +53,7 @@ class OrderController
 
             $orderId = $order->getId();
 
-            $userProducts = $this->order_productsModel->getAllByOrderId($orderId);
+            $userProducts = $this->OrderModel->getAllByUserId($userId);
 
             foreach ($userProducts as $userProduct) {
 
@@ -63,7 +63,7 @@ class OrderController
                 $this->order_productsModel->create1($orderId, $productId, $amount);
 
             }
-            $this->order_productsModel->deleteByUserId($userId);
+            $this->userProducts->deleteByUserId($orderId);
 
 
         } else {
@@ -136,73 +136,54 @@ class OrderController
             header("Location: /login");
             exit();
         }
-        $userId = $_SESSION['userId'];
-// исправил (!)
-        $userOrders = $this->order_productsModel->getByAllOrderId($orderId); //Исправить (работать только с таблицей order_products, orders)
+        $userId = $_SESSION['userId'];// исправил (!)
 
-//        var_dump($userId, $userOrders);
-//        exit;
-        $resultOrders = [];
+        $userOrders = $this->OrderModel->getAllByUserId($userId);
+
+        $newUserOrders = [];
 
         foreach ($userOrders as $userOrder) {
-            $orderId = $userOrder->getId();
 
-            $orderProducts = $this->order_productsModel->getAllByOrderId($orderId);
+            $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder->getId());
 
-            $newOrderProducts = [];
-            $orderTotal = 0;
-            foreach ($orderProducts as $orderProduct) {//проходимся по каждому товару внутри заказа
+            if (!$ordersProducts) {
+                $ordersProducts = [];
+            }
 
+            $total = 0;
+            $orderProductData = [];
+            $newUserOrders = [];
+
+            foreach ($ordersProducts as $orderProduct) {
                 $productId = $orderProduct->getProductId();
                 $product = $this->product->getOneById($productId);
-                if ($product !== null) {//если товап найден в бд,берем данные
-                    $orderProduct->name = $product->getName();
-                    $orderProduct->price = $product->getPrice();
-                    $orderProduct->totalSum = $orderProduct->getAmount() * $product->getPrice();
 
-                    if (!isset($orderTotal)) {
-                        $orderTotal = 0;
-                    }
+                $amount = $orderProduct->getAmount();
+                $price = $product ? $product->getPrice() : 0;
+                $totalSum = $price * $amount;
+                $total += $totalSum;
 
-                    $orderTotal += $orderProduct->totalSum;
-
-                    $newOrderProducts[] = $orderProduct;
-                }
+                $orderProductsData[] = [
+                    'id' => $orderProduct->getId(),
+                    'order_id' => $orderProduct->getOrderId(),
+                    'product_id' => $productId,
+                    'amount' => $amount,
+                    'name' => $product ? $product->getName() : 'Неизвестный товар',
+                    'price' => $price,
+                    'totalSum' => $totalSum,
+                ];
             }
-            $userOrder->totalSum = $orderTotal;
-
-            $userOrder->order_productsModel = $newOrderProducts;
-
-            $resultOrders[] = $userOrder;
-
+            $newUserOrders[] = [
+                'id' => $userOrder->getId(),
+                'user_id' => $userOrder->getUserId(),
+                'contact_name' => $userOrder->getContactName(),
+                'contact_phone' => $userOrder->getContactPhone(),
+                'comment' => $userOrder->getComment(),
+                'address' => $userOrder->getAddress(),
+                'OrderProducts' => $orderProductsData,
+                'total' => $total,
+                ];
         }
         require_once '../Views/user_orders.php';
-//        $newUserOrders = [];
-//        $newOrderProducts = [];
-//
-//        foreach ($userOrders as $userOrder) {
-//            $orderId = $userOrder['id'];
-//
-//            $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder['id']);
-//
-//            foreach ($ordersProducts as $orderProduct) {
-//
-//                $productId = $orderProduct['product_id'];
-//                $product = $this->product->getOneById($productId);
-//
-//                $orderProduct['name'] = $product->getName();
-//                $orderProduct['price'] = $product->getPrice();
-//                $orderProduct['totalSum'] = $product->getPrice() * $orderProduct['amount'];
-//
-//                $newOrderProducts[] = $ordersProducts;
-//
-//            }
-//
-//            $userOrder['orderProducts'] = $newOrderProducts;
-//
-//        }
-//        require_once '../Views/user_orders.php';
-//    }
     }
-
 }

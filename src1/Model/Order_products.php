@@ -5,8 +5,8 @@ namespace Model;
 class Order_products extends Model
 {
     private int $id;
-    private int $orderId;
-    private int $productId;
+    private int $order_id;
+    private int $product_id;
     private int $amount;
 
 
@@ -37,8 +37,8 @@ class Order_products extends Model
     private function hydrate(array $data): self
     {
         $this->id = $data['id'] ?? null;
-        $this->orderId = $data['order_id'] ?? null;
-        $this->productId = $data['product_id'] ?? null;
+        $this->order_id = $data['order_id'] ?? null;
+        $this->product_id = $data['product_id'] ?? null;
         $this->amount = $data['amount'] ?? null;
 
         return $this;
@@ -48,35 +48,51 @@ class Order_products extends Model
     {
         $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :orderId");
         $stmt->execute(['orderId' => $orderId]);
-        $orderProducts = $stmt->fetchAll();
-        return $orderProducts;
+
+        $orderProductsData = $stmt->fetchAll();
+
+        $objects = [];
+
+        foreach ($orderProductsData as $data) {
+            $obj = new self();
+
+            $obj->id = $data['id'];
+            $obj->order_id = $data['order_id'];
+            $obj->product_id = $data['product_id'];
+            $obj->amount = $data['amount'];
+
+            $objects[] = $obj;
+        }
+        return $objects;
     }
 
-    public function deleteByUserId(int $userId)
+    public function deleteByUserId(int $orderId)
     {
         $stmt = $this->pdo->prepare("DELETE FROM order_products WHERE order_id = :orderId");
-        $stmt->execute(['userId' => $userId]);
+        $stmt->execute(['orderId' => $orderId]);
     }
 
-    public function getByAllOrderId(int $orderId): array
-{
+    public function getByAllOrderId(int $orderId): ?array
+    {
     $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :$orderId");
     $stmt->execute(['orderId' => $orderId]);
-    $userProducts = $stmt->fetchAll();
 
-    $objects = [];
-    foreach ($userProducts as $userProduct) {
-        $obj = new self();
+    $orderProductsData = $stmt->fetchAll();
 
-        $this->id = $data['id'] ?? null;
-        $this->orderId = $data['order_id'] ?? null;
-        $this->productId = $data['product_id'] ?? null;
-        $this->amount = $data['amount'] ?? null;
+        $objects = [];
 
-        $objects[] = $obj;
+        foreach ($orderProductsData as $data) {
+            $obj = new self();
+
+            $obj->id = $data['id'];
+            $obj->order_id = $data['order_id'];
+            $obj->product_id = $data['product_id'];
+            $obj->amount = $data['amount'];
+
+            $objects[] = $obj;
+        }
+        return $objects;
     }
-    return $objects;
-}
 
     public function getId(): int
     {
@@ -85,12 +101,12 @@ class Order_products extends Model
 
     public function getOrderId(): int
     {
-        return $this->orderId;
+        return $this->order_id;
     }
 
     public function getProductId(): int
     {
-        return $this->productId;
+        return $this->product_id;
     }
 
     public function getAmount(): int

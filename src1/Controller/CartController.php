@@ -2,11 +2,13 @@
 
 namespace Controller;
 
+use Model\Order;
 use Model\Product;
 use Model\User_products;
 
 class CartController
 {
+    private Order $order;
     private Product $product;
     private User_products $userProducts;
 
@@ -14,6 +16,7 @@ class CartController
     {
         $this->userProducts = new User_products();
         $this->product = new Product();
+        $this->order = new Order();
     }
 
     public function cart()
@@ -29,20 +32,22 @@ class CartController
 
         $userId = $_SESSION['userId'];
 
-        $userProducts = $this->userProducts->getAllByUserId($userId);
+        $userProducts = $this->order->getAllByUserId($userId);
 //        print_r($userId);
 //        print_r($userProducts);
         $products = [];
 
         foreach ($userProducts as $userProduct) {
-            $productId = $userProduct['product_id'];
+            $productId = $userProduct->getId();
 
             $product = $this->product->getOneById($productId);
 //            print_r($product);
 
-            if ($product) {
-                $product->setAmount($userProduct['amount']);
+            if ($product !== null) {
+                $product->setAmount($userProduct->getAmount());
                 $products[] = $product;
+            } else {
+                error_log("продукт не найден " . $productId);
             }
         }
         require_once '../Views/cart.php';

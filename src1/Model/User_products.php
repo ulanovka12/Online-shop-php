@@ -68,24 +68,10 @@ class User_products extends Model
 
         return $obj;
     }
-    public function getAllByUserId(int $userId): array
+    public function deleteByUserId(int $userId): void
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
+        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId");
         $stmt->execute(['userId' => $userId]);
-        $userProducts = $stmt->fetchAll();
-
-        $objects = [];
-        foreach ($userProducts as $userProduct) {
-            $obj = new self();
-
-            $obj->id = $userProduct['id'];
-            $obj->user_id = $userProduct['user_id'];
-            $obj->product_id = $userProduct['product_id'];
-            $obj->amount = $userProduct['amount'];
-
-            $objects[] = $obj;
-        }
-        return $objects;
     }
 
     public function getId(): int

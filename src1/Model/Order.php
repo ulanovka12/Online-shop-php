@@ -12,6 +12,25 @@ class Order extends Model
     private string $address;
     private int $userId;
 
+    public function getAllByUserId(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :userId ORDER BY id DESC");
+        $stmt->execute(['userId' => $userId]);
+        $ordersData = $stmt->fetchAll();
+
+        $result = [];
+        foreach ($ordersData as $data) {
+            $obj = new self();
+            $obj->id = $data['id'];
+            $obj->contactName = $data['contact_name'];
+            $obj->contactPhone = $data['contact_phone'];
+            $obj->comment = $data['comment'];
+            $obj->address = $data['address'];
+            $obj->userId = $data['user_id'];
+            $result[] = $obj;
+        }
+        return $result;
+    }
 
 
     public function create(
