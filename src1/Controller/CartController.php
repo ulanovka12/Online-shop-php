@@ -10,11 +10,9 @@ class CartController
 {
     private Order $order;
     private Product $product;
-    private User_products $userProducts;
 
     public function __construct()
     {
-        $this->userProducts = new User_products();
         $this->product = new Product();
         $this->order = new Order();
     }
@@ -51,8 +49,5 @@ class CartController
             }
         }
         require_once '../Views/cart.php';
-
-        return $products;
     }
-
 }

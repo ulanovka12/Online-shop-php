@@ -2,10 +2,11 @@
 
 namespace Core;
 
-use Controller\UserController;
-use Controller\ProductController;
 use Controller\CartController;
 use Controller\OrderController;
+use Controller\ProductController;
+use Controller\UserController;
+
 class App
 {
     private array $routes = [

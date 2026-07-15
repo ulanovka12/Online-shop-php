@@ -13,14 +13,12 @@ class OrderController
     private Order $OrderModel;
     private Order_products $order_productsModel;
     private Product $product;
-    private User_products $userProducts;
 
     public function __construct()
     {
         $this->OrderModel = new Order();
         $this->order_productsModel = new Order_products();
         $this->product = new Product();
-        $this->userProducts = new User_products();
     }
 
 
@@ -63,10 +61,11 @@ class OrderController
                 $this->order_productsModel->create1($orderId, $productId, $amount);
 
             }
-            $this->userProducts->deleteByUserId($orderId);
+            $this->order_productsModel->deleteByUserId($orderId);
 
 
         } else {
+
             require_once './../Views/order_form.php';
         }
     }
@@ -144,19 +143,23 @@ class OrderController
 
         foreach ($userOrders as $userOrder) {
 
+
             $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder->getId());
 
             if (!$ordersProducts) {
                 $ordersProducts = [];
             }
 
-            $total = 0;
             $orderProductData = [];
-            $newUserOrders = [];
+            $total = 0;
 
             foreach ($ordersProducts as $orderProduct) {
                 $productId = $orderProduct->getProductId();
                 $product = $this->product->getOneById($productId);
+
+
+                $name = $product ? $product->getName() : 'Неизвестный товар';
+                $price = $product ? $product->getPrice() : 0.0;
 
                 $amount = $orderProduct->getAmount();
                 $price = $product ? $product->getPrice() : 0;
@@ -173,6 +176,7 @@ class OrderController
                     'totalSum' => $totalSum,
                 ];
             }
+
             $newUserOrders[] = [
                 'id' => $userOrder->getId(),
                 'user_id' => $userOrder->getUserId(),
@@ -184,6 +188,8 @@ class OrderController
                 'total' => $total,
                 ];
         }
+        $resultOrders = $newUserOrders;
         require_once '../Views/user_orders.php';
+
     }
 }
