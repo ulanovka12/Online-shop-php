@@ -40,11 +40,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($userOrder->order_productsModel as $orderProduct): ?>
+                            <?php foreach ($userOrder->getOrderProducts() as $product): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($orderProduct->getName()); ?></td>
-                                    <td><?php echo htmlspecialchars($orderProduct->getAmount()); ?></td>
-                                    <td><?php echo number_format($orderProduct->getPrice(), 2); ?> ₽</td>
+                                    <td><?php echo htmlspecialchars($product['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['amount']); ?></td>
+                                    <td><?php echo number_format($product['price'], 2); ?> ₽</td>
+                                    <td><?php echo number_format($product['totalSum'], 2); ?> ₽</td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -52,7 +53,7 @@
                     </div>
 
                     <div class="order-footer">
-                        <p class="order-total">Итого: <span><?php echo number_format($userOrder->totalSum, 2); ?> ₽</span></p>
+                        <p class="order-total">Итого: <span><?php echo number_format($userOrder->getTotal(), 2); ?> ₽</span></p>
                     </div>
                 </div>
             <?php endforeach; ?>

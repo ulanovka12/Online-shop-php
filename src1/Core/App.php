@@ -48,10 +48,32 @@ class App
                 'method' => 'cart',
             ],
         ],
+        '/update-cart' => [
+            'POST' => [
+                'class' => CartController::class,
+                'method' => 'updateCart',
+            ],
+        ],
+        '/remove-from-cart' => [
+            'GET' => [
+                'class' => CartController::class,
+                'method' => 'removeFromCart',
+            ],
+        ],
+        '/clear-cart' => [
+            'GET' => [
+                'class' => CartController::class,
+                'method' => 'clearCart',
+            ],
+        ],
         '/profile-change' => [
             'GET' => [
                 'class' => UserController::class,
                 'method' => 'editProfile',
+            ],
+            'POST' => [
+                'class' => UserController::class,
+                'method' => 'updateProfile',
             ],
         ],
         '/add-product' => [
@@ -64,7 +86,7 @@ class App
                 'method' => 'Product',
             ],
         ],
-        '/create-order' => [
+        '/create-orders' => [
             'GET' => [
                 'class' => OrderController::class,
                 'method' => 'getCheckForm',
@@ -85,7 +107,7 @@ class App
 
     public function run()
     {
-        $requestUri = $_SERVER['REQUEST_URI']; //registration
+        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //registration
         $requestMethod = $_SERVER['REQUEST_METHOD']; // POST
 
        if (isset($this->routes[$requestUri])){

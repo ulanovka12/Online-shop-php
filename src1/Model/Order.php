@@ -11,6 +11,8 @@ class Order extends Model
     private string $comment;
     private string $address;
     private int $userId;
+    public array $OrderProducts = [];
+    public float $total = 0;
 
     public function getAllByUserId(int $userId): array
     {
@@ -97,6 +99,16 @@ class Order extends Model
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function getTotal(): float
+    {
+        return $this->total;
+    }
+
+    public function getOrderProducts(): array
+    {
+        return $this->OrderProducts;
     }
 
 }

@@ -1,3 +1,8 @@
+<nav>
+    <a href="/catalog">Каталог</a>
+    <a href="/cart">Корзина</a>
+    <a href="/users-orders">Мои заказы</a>
+</nav>
 <aside class="profile-card">
     <header>
 

@@ -2,7 +2,7 @@
 
 
     <a href="/profile">Мой профиль</a>
-    <a href="/cart">Добавить в корзину</a>
+    <a href="/users-orders">Мои Заказы</a>
 
   <h3>Catalog</h3>
   <div class="card-deck">

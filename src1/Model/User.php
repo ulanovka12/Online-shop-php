@@ -31,7 +31,7 @@ class User extends Model
         $obj->name = $result['name'];
         $obj->email = $result['email'];
         $obj->password = $result['password'];
-
+        $obj->image_url = $result['image_url'] ?? '';
 
         return $obj;
     }
@@ -54,7 +54,7 @@ class User extends Model
         $obj->name = $result['name'];
         $obj->email =  $result['email'];
         $obj->password =  $result['password'];
-        $obj->image_url = $result['image_url'];
+        $obj->image_url = $result['image_url'] ?? '';
 
         return $obj;
     }
@@ -76,9 +76,32 @@ class User extends Model
         $obj->name = $user['name'];
         $obj->email = $user['email'];
         $obj->password = $user['password'];
-
+        $obj->image_url = $result['image_url'] ?? '';
 
         return $obj;
+    }
+
+    public function updateProfile(int $userId, string $name, string $email, ?string $passwordHash): void
+    {
+        if ($passwordHash !== null) {
+            $stmt = $this->pdo->prepare(
+                "UPDATE users SET name = :name, email = :email, password = :password WHERE id = :id"
+            );
+            $stmt->execute([
+                'name' => $name,
+                'email' => $email,
+                'password' => $passwordHash,
+                'id' => $userId,
+            ]);
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
+        $stmt->execute([
+            'name' => $name,
+            'email' => $email,
+            'id' => $userId,
+        ]);
     }
 
     public function getId(): int

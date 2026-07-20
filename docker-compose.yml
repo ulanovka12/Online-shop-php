@@ -11,7 +11,7 @@ services:
 
   php-fpm:
     container_name: php-fpm
-    build: ../Online-shop-php/docker/docker_php
+    build: .docker/docker_php
     restart: always
     volumes:
       - .:/var/www/html

@@ -8,19 +8,19 @@
         <label style="color: #ff0000"><?php echo $errors['name']; ?></label>
         <?php endif; ?>
 
-        <input type="text" placeholder="Enter name" name="name" id="name" value="<?php echo $user->getName(); ?>"required>
+        <input type="text" placeholder="Enter name" name="name" id="name" value="<?php echo htmlspecialchars($user->getName()); ?>"required>
 
         <label for="email"><b>Введите новый email:</b></label>
         <?php if (isset($errors['email'])): ?>
         <label style="color: #ff0000"><?php echo $errors['email']; ?></label>
         <?php endif; ?>
-        <input type="text" placeholder="Enter Email" name="email" id="email" value="<?php echo $user->getEmail(); ?> required>
+        <input type="text" placeholder="Enter Email" name="email" id="email" value="<?php echo htmlspecialchars ($user->getEmail()); ?> required>
 
-        <label for="password"><b>Введите новый пароль:</b></label>
+        <label for="password"><b>Введите новый пароль (оставьте пустым, чтобы не менять):</b></label>
         <?php if (isset($errors['password'])): ?>
         <label style="color: #ff0000"><?php echo $errors['password']; ?></label>
         <?php endif; ?>
-        <input type="password" placeholder="Enter Password" name="password" id="password" value="<?php echo $user->getPassword(); ?>required>
+        <input type="password" placeholder="Enter Password" name="password" id="password">
 
 <!---->
 <!--        <label for="image"><b>image</b></label>-->

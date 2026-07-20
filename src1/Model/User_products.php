@@ -11,6 +11,26 @@ class User_products extends Model
 
     private int $amount;
 
+    public function getByUserId(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
+        $stmt->execute(['userId' => $userId]);
+
+        $result = [];
+
+        foreach ($stmt->fetchAll() as $data)
+        {
+            $obj = new self();
+
+            $obj->id = $data['id'];
+            $obj->user_id = $data['user_id'];
+            $obj->product_id = $data['product_id'];
+            $obj->amount = $data['amount'];
+
+            $result[] = $obj;
+        }
+        return $result;
+    }
     public function getByProductId(int $userId, int $productId): self|null
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE product_id = :productId AND user_id = :userId");
@@ -72,6 +92,12 @@ class User_products extends Model
     {
         $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId");
         $stmt->execute(['userId' => $userId]);
+    }
+
+    public function deleteByProductId(int $userId, int $productId): void
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
+        $stmt->execute(['userId' => $userId, 'productId' => $productId]);
     }
 
     public function getId(): int

@@ -16,9 +16,12 @@ class UserController
 
     public function getRegistrate()
     {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         if (isset($_SESSION['userId'])) {
-            header('Location: /login');
+            header('Location: /catalog');
+            exit();
         }
         require_once '../Views/registration_form.php';
     }
@@ -32,16 +35,17 @@ class UserController
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
-            $passwordRep = $_POST['psw'];
 
             $password = password_hash($password, PASSWORD_DEFAULT);
 
 
-            $result = $this->userModel->getByUsername($name, $email, $password);
-            print_r($result);
-
-            $result = $this->userModel->getByEmail($email);
-
+            $user = $this->userModel->getByUsername($name, $email, $password);
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['userId'] = $user->getId();
+            header('Location: /catalog');
+            exit();
         }
         require_once '../Views/registration_form.php';
     }
@@ -239,12 +243,68 @@ class UserController
 
             $user = $this->userModel->getByIdProfile($userId);
 
-            print_r($user);
-
             require_once '../Views/edit_handle_profile.php';
         } else {
             header('location: /login');
         }
+    }
+    public function updateProfile()
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if (!isset($_SESSION['userId'])) {
+            header('Location: /login');
+            exit();
+        }
+
+        $userId = $_SESSION['userId'];
+        $errors = $this->validateProfileUpdate($_POST, $userId);
+
+        if (empty($errors)) {
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $password = trim($_POST['password'] ?? '');
+            $passwordHash = $password === '' ? null : password_hash($password, PASSWORD_DEFAULT);
+
+            $this->userModel->updateProfile($userId, $name, $email, $passwordHash);
+
+            header('Location: /profile');
+            exit();
+        }
+
+        $user = $this->userModel->getByIdProfile($userId);
+        require_once '../Views/edit_handle_profile.php';
+    }
+
+    private function validateProfileUpdate(array $data, int $userId): array
+    {
+        $errors = [];
+
+        $errorName = $this->validateName($data);
+        if (!empty($errorName)) {
+            $errors['name'] = $errorName;
+        }
+        if (isset($data['email'])){
+            $email = $data['email'];
+            if (strlen($email) < 3) {
+                $errors['email'] = 'Email не может содержать меньше 3 символов';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Неправильный email';
+            }else{
+                $user = $this->userModel->getByEmail($email);
+                if ($user !== null && $user->getId() !== $userId) {
+                    $errors['email'] = 'Этот Email уже существует';
+                }
+            }
+        }
+        else{
+            $errors['email'] = 'Этот email должен быть заполнен!';
+        }
+        if (isset($data['password']) && trim($data['password']) !== '' && strlen(trim($data['password'])) < 5) {
+            $errors['password'] = 'пароль не должен быть меньше 5 символов';
+        }
+        return $errors;
     }
 
 }

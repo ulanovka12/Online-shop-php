@@ -1,87 +1,17 @@
-<!-- Подключаем FontAwesome для иконок -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+<!-- Nav -->
+<nav class="navbar navbar-inverse bg-inverse fixed-top bg-faded">
     <div class="container">
-        <a class="navbar-brand" href="/catalog"><i class="fas fa-store me-2"></i>Магазин</a>
-        <div class="ms-auto d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-light position-relative" data-toggle="modal" data-target="#cart">
-                <i class="fas fa-shopping-cart"></i> Корзина
-                <span class="badge bg-danger rounded-pill total-count ms-1">0</span>
-            </button>
-            <button class="clear-cart btn btn-outline-danger">
-                <i class="fas fa-trash-alt"></i> Очистить
-            </button>
+        <div class="row w-100">
+            <div class="col">
+                <a href="/catalog" class="btn btn-primary">В каталог</a>
+                <a href="/users-orders" class="btn btn-secondary">Мои заказы</a>
+            </div>
         </div>
     </div>
 </nav>
-
-<!-- каталог товаров -->
-<div class="container mt-5 pt-2">
-    <h2 class="mb-4 fw-light border-bottom pb-2"><i class="fas fa-tags me-2 text-primary"></i>Каталог товаров</h2>
-    <div class="row g-4">
-        <?php if (empty($products)): ?>
-            <div class="col-12">
-                <div class="alert alert-info text-center py-5">
-                    <i class="fas fa-box-open fa-3x d-block mb-3"></i>
-                    Нет доступных товаров
-                </div>
-            </div>
-        <?php else: ?>
-            <?php foreach ($products as $product): ?>
-                <div class="col-md-4 col-lg-3">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden product-card">
-                        <?php if (!empty($product->getImageUrl())): ?>
-                            <img class="card-img-top" src="<?php echo htmlspecialchars($product->getImageUrl()); ?>" alt="<?php echo htmlspecialchars($product->getName()); ?>">
-                        <?php else: ?>
-                            <img class="card-img-top" src="/placeholder-image.jpg" alt="No image">
-                        <?php endif; ?>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title fw-bold"><?php echo htmlspecialchars($product->getName()); ?></h5>
-                            <p class="card-text text-muted small"><?php echo htmlspecialchars($product->getDescription()); ?></p>
-                            <p class="card-text fs-5 fw-semibold text-primary">$<?php echo number_format($product->getPrice(), 2); ?></p>
-
-                            <?php if ($product->getAmount()): ?>
-                                <p class="card-text text-success small">
-                                    <i class="fas fa-check-circle me-1"></i> В корзине: <?php echo $product->getAmount(); ?>
-                                </p>
-                            <?php endif; ?>
-
-                            <form action="/add-to-cart" method="POST" class="mt-auto">
-                                <input type="hidden" name="product_id" value="<?php echo $product->getId(); ?>">
-                                <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($product->getName()); ?>">
-                                <input type="hidden" name="product_price" value="<?php echo $product->getPrice(); ?>">
-
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-5">
-                                        <label for="amount_<?php echo $product->getId(); ?>" class="form-label small text-muted mb-0">Кол-во</label>
-                                        <input type="number"
-                                               class="form-control form-control-sm"
-                                               id="amount_<?php echo $product->getId(); ?>"
-                                               name="amount"
-                                               value="1"
-                                               min="1"
-                                               max="99"
-                                               required>
-                                    </div>
-                                    <div class="col-7">
-                                        <button type="submit" class="btn btn-primary w-100 btn-sm rounded-pill">
-                                            <i class="fas fa-cart-plus me-1"></i> В корзину
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Отображение корзины -->
+<!-- Отображение текущей корзины -->
 <div class="container mt-5">
-    <h3 class="fw-light border-bottom pb-2"><i class="fas fa-shopping-bag me-2 text-primary"></i>Текущая корзина</h3>
+    <h3 Текущая корзина</h3>
     <?php
     $cart_total = 0;
     if (!empty($products)) {
@@ -153,7 +83,7 @@
             <a href="/create-order" class="btn btn-success rounded-pill px-4">
                 <i class="fas fa-credit-card me-1"></i> Оформить заказ
             </a>
-            <a href="/cart" class="btn btn-outline-danger rounded-pill px-4">
+            <a href="/clear-cart" class="btn btn-danger">Clear Cart</a>
                 <i class="fas fa-trash-alt me-1"></i> Очистить
             </a>
         </div>

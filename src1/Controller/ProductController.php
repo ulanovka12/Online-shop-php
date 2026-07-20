@@ -23,7 +23,7 @@ class ProductController
             session_start();
         }
         if (!isset($_SESSION['userId'])) {
-            header("Location: ./login");
+            header("Location: /login");
             exit();
         }
         require_once '../Views/add_product_form.php';
