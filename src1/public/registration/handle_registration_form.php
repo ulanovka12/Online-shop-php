@@ -78,8 +78,8 @@ function validate(array $data):array
         $result = $stmt->fetch();
         print_r($result);
     }
+    require_once './handle_registration_form.php';
 
-    require_once '/registration_form.php';
 
 ?>
 

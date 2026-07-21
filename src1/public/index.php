@@ -18,24 +18,16 @@
 //    }
 //    return false;
 //};
-
 //use Controller\UserController;
 
 use Controller\UserController;
+use Core\App;
+use Core\Autoloader;
 
-$autoload = function(string $className) {
-     // ./../Core/App.php
-    $path = str_replace('\\', '/', $className); //Core/App
-    $path = $path . '.php'; //Core/App.php
-    $path = './../' . $path;
-    if (file_exists($path)) {
-        require_once $path;
-        return true;
-    }
-    return false;
-};
+require './../Core/Autoloader.php';
 
-spl_autoload_register($autoload);
+$path = dirname(__DIR__);
+\Core\Autoloader::register($path);
 
 //require_once '../Core/App.php';
 
