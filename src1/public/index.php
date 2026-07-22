@@ -100,23 +100,23 @@ $path = dirname(__DIR__);
 
 $app = new Core\App();
 
-$app->addRoute('/registration', 'GET', UserController::class, 'getRegistrate');
-$app->addRoute('/registration', 'POST', UserController::class, 'Registrate');
-$app->addRoute('/login', 'GET', UserController::class, 'getLogin');
-$app->addRoute('/login', 'POST', UserController::class, 'login');
-$app->addRoute('/catalog', 'GET', \Controller\ProductController::class, 'Catalog' );
-$app->addRoute('/profile', 'GET', \Controller\ProfileController::class, 'Profile' );
-$app->addRoute('/cart', 'GET', \Controller\CartController::class, 'cart' );
-$app->addRoute('/update-cart', 'POST', \Controller\CartController::class, 'updateCart' );
-$app->addRoute('/remove-from-cart', 'GET', \Controller\CartController::class, 'removeFromCart' );
-$app->addRoute('/clear-cart', 'GET', \Controller\CartController::class, 'clearCart' );
-$app->addRoute('/profile-change', 'GET', \Controller\ProfileController::class, 'editProfile');
-$app->addRoute('/profile-change', 'POST', \Controller\ProfileController::class, 'updateProfile');
-$app->addRoute('/add-product', 'GET', \Controller\ProductController::class, 'getProducts');
-$app->addRoute('/add-product', 'POST', \Controller\ProductController::class, 'Product');
-$app->addRoute('/create-order', 'GET', \Controller\OrderController::class, 'getCheckForm');
-$app->addRoute('/create-order', 'POST', \Controller\OrderController::class, 'handleCheckout');
-$app->addRoute('/users-orders', 'GET', \Controller\OrderController::class, 'getAllOrders');
+$app->get('/registration', \Controller\UserController::class, 'getRegistrate');
+$app->post('/registration', \Controller\UserController::class, 'Registrate');
+$app->get('/login',  \Controller\UserController::class, 'getLogin');
+$app->post('/login',  UserController::class, 'login');
+$app->get('/catalog', \Controller\ProductController::class, 'Catalog' );
+$app->get('/profile', \Controller\ProfileController::class, 'Profile' );
+$app->get('/cart', \Controller\CartController::class, 'cart' );
+$app->post('/update-cart',  \Controller\CartController::class, 'updateCart' );
+$app->get('/remove-from-cart',  \Controller\CartController::class, 'removeFromCart' );
+$app->get('/clear-cart', \Controller\CartController::class, 'clearCart' );
+$app->get('/profile-change', \Controller\ProfileController::class, 'editProfile');
+$app->post('/profile-change', \Controller\ProfileController::class, 'updateProfile');
+$app->get('/add-product', \Controller\ProductController::class, 'getProducts');
+$app->post('/add-product',  \Controller\ProductController::class, 'Product');
+$app->get('/create-order', \Controller\OrderController::class, 'getCheckForm');
+$app->post('/create-order', \Controller\OrderController::class, 'handleCheckout');
+$app->get('/users-orders', \Controller\OrderController::class, 'getAllOrders');
 
 $app->run();
 
