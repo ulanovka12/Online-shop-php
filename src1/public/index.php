@@ -110,6 +110,8 @@ $app->get('/cart', \Controller\CartController::class, 'cart' );
 $app->post('/update-cart',  \Controller\CartController::class, 'updateCart' );
 $app->get('/remove-from-cart',  \Controller\CartController::class, 'removeFromCart' );
 $app->get('/clear-cart', \Controller\CartController::class, 'clearCart' );
+$app->post('/add-product', \Controller\CartController::class, 'addProductToCart');
+$app->post('/decrease-product', \Controller\CartController::class, 'decreaseProductFromCart');
 $app->get('/profile-change', \Controller\ProfileController::class, 'editProfile');
 $app->post('/profile-change', \Controller\ProfileController::class, 'updateProfile');
 $app->get('/add-product', \Controller\ProductController::class, 'getProducts');

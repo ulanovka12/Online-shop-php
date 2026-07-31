@@ -8,12 +8,12 @@ use Model\User_products;
 class CartController
 {
     private Product $product;
-    private User_products $userProducts;
+    private User_products $user_productsModel;
 
     public function __construct()
     {
         $this->product = new Product();
-        $this->userProducts = new User_products();
+        $this->user_productsModel = new User_products();
     }
 
     public function cart()
@@ -29,7 +29,7 @@ class CartController
 
         $userId = $_SESSION['userId'];
 
-        $userProducts = $this->userProducts->getByUserId($userId);
+        $userProducts = $this->user_productsModel->getByUserId($userId);
 //        print_r($userId);
 //        print_r($userProducts);
         $products = [];
@@ -68,7 +68,7 @@ class CartController
         $amount = (int) ($_POST['amount'] ?? 0);
 
         if ($productId > 0 && $amount > 0) {
-            $this->userProducts->getUpdateProduct($userId, $productId, $amount);
+            $this->user_productsModel->getUpdateProduct($userId, $productId, $amount);
         }
 
         header('Location: /cart');
@@ -90,7 +90,7 @@ class CartController
         $productId = (int) ($_POST['productId'] ?? 0);
 
         if ($productId > 0) {
-            $this->userProducts->deleteByProductId($userId, $productId);
+            $this->user_productsModel->deleteByProductId($userId, $productId);
         }
         header('Location: /cart');
         exit();
@@ -107,8 +107,57 @@ class CartController
             exit();
         }
         $userId = $_SESSION['userId'];
-        $this->userProducts->deleteByUserId($userId);
+        $this->user_productsModel->deleteByUserId($userId);
         header('Location: /cart');
         exit();
     }
+
+    public function addProduct(int $productId, int $userId)
+    {
+        // Проверяем, есть ли уже запись
+        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+
+        if ($existing === null) {
+            // Вставляем новую запись с количеством 1
+            $this->user_productsModel->insertUserProduct($userId, $productId, 1);
+        } else {
+            // Увеличиваем количество на 1
+            $newAmount = $existing->getAmount() + 1;
+            $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+        }
+    }
+
+    // Уменьшить на 1 (или удалить, если станет 0)
+    public function decreaseProductFromCart()
+    {
+        // Запускаем сессию
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        // Проверяем, что это POST-запрос и передан product_id
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
+            header("Location: /catalog");
+            exit();
+        }
+
+        $userId = $_SESSION['userId'] ?? 1;   // или фиксированное значение
+        $productId = (int)$_POST['product_id'];
+
+        // Получаем текущую запись
+        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+
+        if ($existing) {
+            $newAmount = $existing->getAmount() - 1;
+            if ($newAmount > 0) {
+                $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+            } else {
+                $this->user_productsModel->deleteUserProducts($userId, $productId);
+            }
+        }
+
+        header("Location: /catalog");
+        exit();
+    }
+
 }

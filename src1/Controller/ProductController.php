@@ -31,35 +31,36 @@ class ProductController
 
     public function product()
     {
-
+        // Запускаем сессию, если ещё не запущена
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 
-        $errors = $this->validateProduct($_POST); // Передаем $_POST в метод
-
-        if (empty($errors)) {
-
-            $userId = $_SESSION['userId'];
-            $productId = $_POST['product_id'];
-            $amount = $_POST['amount'];
-
-            $data = $this->user_productsModel->getByProductId($userId, $productId);
-
-            if ($data === null) {
-                $this->user_productsModel->getByProduct($userId,$productId,$amount);
-            } else {
-                $newAmount = $amount + $data->getAmount();
-
-                $this->user_productsModel->getUpdateProduct($userId, $productId, $newAmount);
-
-            }
+        // Проверяем, что это POST-запрос и передан product_id
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
             header("Location: /catalog");
             exit();
         }
-        require_once '../Views/add_product_form.php';
-    }
 
+        $userId = $_SESSION['userId'] ?? 1;  // если нет сессии – используем гостя (1)
+        $productId = (int)$_POST['product_id'];
+        $amount = 1; // всегда добавляем одну единицу
+
+        // Проверяем, есть ли уже этот товар у пользователя
+        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+
+        if ($existing === null) {
+            // Если нет – вставляем новую запись с количеством 1
+            $this->user_productsModel->insertUserProduct($userId, $productId, $amount);
+        } else {
+            // Если есть – увеличиваем количество на 1
+            $newAmount = $existing->getAmount() + 1;
+            $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+        }
+
+        header("Location: /catalog");
+        exit();
+    }
     private function validateProduct($data)
     {
         $errors = [];
@@ -88,17 +89,32 @@ class ProductController
 
     public function catalog()
     {
+        // Сессия
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
+        $userId = $_SESSION['userId'] ?? 1; // если нет сессии – гость
 
-        if (!isset($_SESSION['userId'])) {
-            header('Location: /login');
-            exit();
-        }
-
+        // Получаем все товары
         $products = $this->productModel->getAll();
 
+        // Получаем корзину пользователя
+        $userProducts = $this->user_productsModel->getByUserId($userId);
+
+        // Превращаем корзину в массив [product_id => amount]
+        $amounts = [];
+        foreach ($userProducts as $up) {
+            $amounts[$up->getProductId()] = $up->getAmount();
+        }
+
+        // Проставляем количество каждому товару
+        foreach ($products as $product) {
+            $productId = $product->getId();
+            $amount = $amounts[$productId] ?? 0;
+            $product->setAmount($amount);
+        }
+
+        // Передаём в представление
         require_once '../Views/catalog_page.php';
     }
 }
