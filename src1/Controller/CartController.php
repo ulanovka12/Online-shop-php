@@ -5,7 +5,7 @@ namespace Controller;
 use Model\Product;
 use Model\User_products;
 
-class CartController
+class CartController extends BaseController
 {
     private Product $product;
     private User_products $user_productsModel;
@@ -18,16 +18,12 @@ class CartController
 
     public function cart()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header('Location: /login');
             exit();
         }
 
-        $userId = $_SESSION['userId'];
+        $userId = $this->getCurrentUserId();
 
         $userProducts = $this->user_productsModel->getByUserId($userId);
 //        print_r($userId);
@@ -54,11 +50,7 @@ class CartController
 
     public function updateCart()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header('Location: /login');
             exit();
         }
@@ -77,16 +69,12 @@ class CartController
 
     public function removeFromCart()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header('Location: /login');
             exit();
         }
 
-        $userId = $_SESSION['userId'];
+        $userId = $this->getCurrentUserId();
         $productId = (int) ($_POST['productId'] ?? 0);
 
         if ($productId > 0) {
@@ -102,11 +90,11 @@ class CartController
             session_start();
         }
 
-        if (!isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header('Location: /login');
             exit();
         }
-        $userId = $_SESSION['userId'];
+        $userId = $this->getCurrentUserId();
         $this->user_productsModel->deleteByUserId($userId);
         header('Location: /cart');
         exit();
@@ -130,18 +118,13 @@ class CartController
     // Уменьшить на 1 (или удалить, если станет 0)
     public function decreaseProductFromCart()
     {
-        // Запускаем сессию
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
         // Проверяем, что это POST-запрос и передан product_id
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
             header("Location: /catalog");
             exit();
         }
 
-        $userId = $_SESSION['userId'] ?? 1;   // или фиксированное значение
+        $userId = $this->getCurrentUserId() ?? 1;   // или фиксированное значение
         $productId = (int)$_POST['product_id'];
 
         // Получаем текущую запись
@@ -159,5 +142,4 @@ class CartController
         header("Location: /catalog");
         exit();
     }
-
 }

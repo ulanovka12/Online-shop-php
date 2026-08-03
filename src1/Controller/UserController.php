@@ -4,7 +4,7 @@ namespace Controller;
 
 use Model\User;
 
-class UserController
+class UserController extends BaseController
 {
 
     private User $userModel;
@@ -16,10 +16,7 @@ class UserController
 
     public function getRegistrate()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header('Location: /catalog');
             exit();
         }

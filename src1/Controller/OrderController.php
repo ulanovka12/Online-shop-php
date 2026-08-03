@@ -8,7 +8,7 @@ use Model\Order_products;
 use Model\User_products;
 
 
-class OrderController
+class OrderController extends BaseController
 {
     private Order $OrderModel;
     private Order_products $order_productsModel;

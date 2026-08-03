@@ -5,7 +5,7 @@ namespace Controller;
 use Model\Product;
 use Model\User_products;
 
-class ProductController
+class ProductController extends BaseController
 {
 
     private Product $productModel;
@@ -19,10 +19,7 @@ class ProductController
 
     public function getProducts()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['userId'])) {
+        if ($this->check()) {
             header("Location: /login");
             exit();
         }
@@ -31,18 +28,13 @@ class ProductController
 
     public function product()
     {
-        // Запускаем сессию, если ещё не запущена
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
         // Проверяем, что это POST-запрос и передан product_id
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
             header("Location: /catalog");
             exit();
         }
 
-        $userId = $_SESSION['userId'] ?? 1;  // если нет сессии – используем гостя (1)
+        $userId = $this->getCurrentUserId() ?? 1;  // если нет сессии – используем гостя (1)
         $productId = (int)$_POST['product_id'];
         $amount = 1; // всегда добавляем одну единицу
 
