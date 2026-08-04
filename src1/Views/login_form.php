@@ -1,15 +1,19 @@
 <div class="login">
     <h1>Login</h1>
-    <form class="form-signin" action= "/login" method="POST">
 
-        <input type="text" name="username" placeholder="Mail" required="required" />
+    <?php if (isset($errors['auth'])): ?>
+        <div style="color: #ff0000; margin-bottom: 10px;">
+            <?php echo htmlspecialchars($errors['auth']); ?>
+        </div>
+    <?php endif; ?>
 
-        <?php if (isset($errors['username'])): ?>
-            <label style="color: #ff0000"><?php echo $errors['username']; ?></label>
+    <form class="form-signin" action="/login" method="POST">
+        <input type="text" name="email" placeholder="Mail" required="required" />
+        <?php if (isset($errors['email'])): ?>
+            <label style="color: #ff0000"><?php echo $errors['email']; ?></label>
         <?php endif; ?>
 
         <input type="password" name="password" placeholder="pass" required="required" />
-
         <?php if (isset($errors['password'])): ?>
             <label style="color: #ff0000"><?php echo $errors['password']; ?></label>
         <?php endif; ?>

@@ -13,13 +13,14 @@ class ProductController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->productModel = new Product();
         $this->user_productsModel = new User_products();
     }
 
     public function getProducts()
     {
-        if ($this->check()) {
+        if ($this->authService->check()) {
             header("Location: /login");
             exit();
         }
@@ -34,7 +35,7 @@ class ProductController extends BaseController
             exit();
         }
 
-        $userId = $this->getCurrentUserId() ?? 1;  // если нет сессии – используем гостя (1)
+        $userId = $this->authService->getCurrentUser() ?? 1;  // если нет сессии – используем гостя (1)
         $productId = (int)$_POST['product_id'];
         $amount = 1; // всегда добавляем одну единицу
 
@@ -81,17 +82,14 @@ class ProductController extends BaseController
 
     public function catalog()
     {
-        // Сессия
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        $userId = $_SESSION['userId'] ?? 1; // если нет сессии – гость
+
+        $userId = $this->authService->getCurrentUser() ?? 1; // если нет сессии – гость
 
         // Получаем все товары
         $products = $this->productModel->getAll();
 
         // Получаем корзину пользователя
-        $userProducts = $this->user_productsModel->getByUserId($userId);
+        $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
 
         // Превращаем корзину в массив [product_id => amount]
         $amounts = [];

@@ -4,28 +4,32 @@ namespace Controller;
 
 use Model\Product;
 use Model\User_products;
+use Service\AuthService;
 
 class CartController extends BaseController
 {
     private Product $product;
     private User_products $user_productsModel;
 
+
     public function __construct()
     {
+        parent::__construct();
         $this->product = new Product();
         $this->user_productsModel = new User_products();
+
     }
 
     public function cart()
     {
-        if ($this->check()) {
+        if ($this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $userId = $this->getCurrentUserId();
+        $user = $this->authService->getCurrentUser();
 
-        $userProducts = $this->user_productsModel->getByUserId($userId);
+        $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
 //        print_r($userId);
 //        print_r($userProducts);
         $products = [];
@@ -50,17 +54,17 @@ class CartController extends BaseController
 
     public function updateCart()
     {
-        if ($this->check()) {
+        if ($this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $userId = $_SESSION['userId'];
+        $user = $this->authService->getCurrentUser();
         $productId = (int) ($_POST['productId'] ?? 0);
         $amount = (int) ($_POST['amount'] ?? 0);
 
         if ($productId > 0 && $amount > 0) {
-            $this->user_productsModel->getUpdateProduct($userId, $productId, $amount);
+            $this->user_productsModel->getUpdateProduct($user->getId(), $productId, $amount);
         }
 
         header('Location: /cart');
@@ -69,16 +73,16 @@ class CartController extends BaseController
 
     public function removeFromCart()
     {
-        if ($this->check()) {
+        if ($this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $userId = $this->getCurrentUserId();
+        $user = $this->authService->getCurrentUser();
         $productId = (int) ($_POST['productId'] ?? 0);
 
         if ($productId > 0) {
-            $this->user_productsModel->deleteByProductId($userId, $productId);
+            $this->user_productsModel->deleteByProductId($user->getId(), $productId);
         }
         header('Location: /cart');
         exit();
@@ -86,16 +90,12 @@ class CartController extends BaseController
 
     public function clearCart()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if ($this->check()) {
+        if ($this->authService->check()) {
             header('Location: /login');
             exit();
         }
-        $userId = $this->getCurrentUserId();
-        $this->user_productsModel->deleteByUserId($userId);
+        $user = $this->authService->getCurrentUser();
+        $this->user_productsModel->deleteByUserId($user->getId());
         header('Location: /cart');
         exit();
     }
@@ -124,7 +124,7 @@ class CartController extends BaseController
             exit();
         }
 
-        $userId = $this->getCurrentUserId() ?? 1;   // или фиксированное значение
+        $userId = $this->authService->getCurrentUser() ?? 1;   // или фиксированное значение
         $productId = (int)$_POST['product_id'];
 
         // Получаем текущую запись

@@ -17,6 +17,7 @@ class OrderController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->OrderModel = new Order();
         $this->order_productsModel = new Order_products();
         $this->product = new Product();
@@ -31,11 +32,8 @@ class OrderController extends BaseController
 
     public function handleCheckout()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
 
-        if (!isset($_SESSION['userId'])) {
+        if ($this->authService->check()) {
             header("Location: /login");
             exit();
         }
@@ -53,7 +51,7 @@ class OrderController extends BaseController
 
             $orderId = $order->getId();
 
-            $userProducts = $this->user_productsModel->getByUserId($userId);
+            $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
 
             foreach ($userProducts as $userProduct) {
 
@@ -131,26 +129,18 @@ class OrderController extends BaseController
 
     public function getAllOrders()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['userId'])) {
+        if ($this->authService->check()) {
             header("Location: /login");
             exit();
         }
-        $userId = $_SESSION['userId'];// исправил (!)
+        $user = $this->authService->getCurrentUser(); // исправил (!)
 
-        $userOrders = $this->OrderModel->getAllByUserId($userId);
+        $userOrders = $this->OrderModel->getAllByUserId($user->getId());
 
         $newUserOrders = [];
 
         foreach ($userOrders as $userOrder) {
             $ordersProducts = $this->order_productsModel->getAllByOrderId($userOrder->getId());
-
-            // если null, заменяем на пустой массив
-//            if (!$ordersProducts) {
-//                $ordersProducts = [];
-//            }
 
             $orderProductsData = [];
             $orderTotal = 0;
@@ -178,20 +168,8 @@ class OrderController extends BaseController
             $userOrder->OrderProducts = $orderProductsData;
             $userOrder->total = $orderTotal;
 
-//
-//                $newUserOrders[] = [
-//                    'id' => $userOrder->getId(),
-//                    'user_id' => $userOrder->getUserId(),
-//                    'contact_name' => $userOrder->getContactName(),
-//                    'contact_phone' => $userOrder->getContactPhone(),
-//                    'comment' => $userOrder->getComment(),
-//                    'address' => $userOrder->getAddress(),
-//                    'OrderProducts' => $orderProductsData,
-//                    'total' => $orderTotal,
-//                ];
-
             $userOrders = array_filter($userOrders, function($order) {
-                return !empty($order->OrderProducts);
+                return (!empty($order->OrderProducts));
             });
         }
 

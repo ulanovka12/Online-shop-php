@@ -2,26 +2,14 @@
 
 namespace Controller;
 
+use Service\AuthService;
+
 class BaseController
 {
-    public function check():bool
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
     {
-        $this->startSession();
-        return (!isset($_SESSION['userId']));
-    }
-
-
-    public function getCurrentUserId():int
-    {
-        $this->startSession();
-        return $_SESSION['userId'];
-    }
-
-
-    private function startSession()
-    {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->authService = $authService;
     }
 }
