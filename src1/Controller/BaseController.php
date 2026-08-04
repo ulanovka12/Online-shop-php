@@ -8,8 +8,8 @@ class BaseController
 {
     protected AuthService $authService;
 
-    public function __construct(AuthService $authService)
+    public function __construct()
     {
-        $this->authService = $authService;
+        $this->authService = new AuthService();
     }
 }

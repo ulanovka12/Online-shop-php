@@ -6,6 +6,7 @@ use Controller\CartController;
 use Controller\OrderController;
 use Controller\ProductController;
 use Controller\UserController;
+use Service\AuthService;
 
 class App
 {

@@ -83,13 +83,13 @@ class ProductController extends BaseController
     public function catalog()
     {
 
-        $userId = $this->authService->getCurrentUser() ?? 1; // если нет сессии – гость
+        $user = $this->authService->getCurrentUser() ?? 1; // если нет сессии – гость
 
         // Получаем все товары
         $products = $this->productModel->getAll();
 
         // Получаем корзину пользователя
-        $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+        $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
 
         // Превращаем корзину в массив [product_id => amount]
         $amounts = [];

@@ -3,17 +3,15 @@
 namespace Controller;
 
 use Model\User;
-use Model\User_products;
+use Service\AuthService;
 
 class UserController extends BaseController
 {
-    private User_products $userProductModel;
     private User $userModel;
 
     public function __construct()
     {
         parent::__construct();
-        $this->userProductModel = new User_products();
         $this->userModel = new User();
     }
 
@@ -25,30 +23,29 @@ class UserController extends BaseController
         }
         require_once '../Views/registration_form.php';
     }
-
     public function registrate()
     {
         $errors = $this->validateRegistrate($_POST);
 
         if (empty($errors)) {
-
             $name = $_POST['name'];
             $email = $_POST['email'];
-            $password = $_POST['password'];
+            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-            $password = password_hash($password, PASSWORD_DEFAULT);
-
-
-            $user = $this->userModel->getByUsername($name, $email, $password);
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
+            // Создаём пользователя
+            $userId = $this->userModel->getByUsername($name, $email, $password);
+            if ($userId) {
+                // Автоматический вход после регистрации (опционально)
+                $this->authService->auth($_POST['email'], $_POST['password']);
+                header('Location: /catalog');
+                exit();
+            } else {
+                $errors['auth'] = 'Неверный email или пароль';
             }
-            $_SESSION['userId'] = $user->getId();
-            header('Location: /catalog');
-            exit();
         }
         require_once '../Views/registration_form.php';
     }
+
     private function validateRegistrate(array $data): array
     {
         $errors = [];
