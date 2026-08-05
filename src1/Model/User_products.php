@@ -13,6 +13,7 @@ class User_products extends Model
 
     public function getAllUserProductByUserId(int $userId): array
     {
+
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :userId");
         $stmt->execute(['userId' => $userId]);
 

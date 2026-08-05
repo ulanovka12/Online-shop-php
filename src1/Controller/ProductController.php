@@ -35,20 +35,20 @@ class ProductController extends BaseController
             exit();
         }
 
-        $userId = $this->authService->getCurrentUser() ?? 1;  // если нет сессии – используем гостя (1)
+        $user = $this->authService->getCurrentUser() ?? 1;  // если нет сессии – используем гостя (1)
         $productId = (int)$_POST['product_id'];
         $amount = 1; // всегда добавляем одну единицу
 
         // Проверяем, есть ли уже этот товар у пользователя
-        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+        $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
 
         if ($existing === null) {
             // Если нет – вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($userId, $productId, $amount);
+            $this->user_productsModel->insertUserProduct($user->getId(), $productId, $amount);
         } else {
             // Если есть – увеличиваем количество на 1
             $newAmount = $existing->getAmount() + 1;
-            $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+            $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $productId);
         }
 
         header("Location: /catalog");
@@ -88,8 +88,14 @@ class ProductController extends BaseController
         // Получаем все товары
         $products = $this->productModel->getAll();
 
-        // Получаем корзину пользователя
-        $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
+        if (!$user) {
+            $this->authService->check();
+            header("Location: /login");
+            exit(); // редирект на логин
+        } else {
+            $userId = is_object($user) ? $user->getId() : (int) $user;
+            $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+        }
 
         // Превращаем корзину в массив [product_id => amount]
         $amounts = [];

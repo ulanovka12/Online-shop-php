@@ -25,6 +25,7 @@ class UserController extends BaseController
     }
     public function registrate()
     {
+
         $errors = $this->validateRegistrate($_POST);
 
         if (empty($errors)) {

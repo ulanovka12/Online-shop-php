@@ -42,8 +42,8 @@ class AuthService
             $passwordDb = $user->getPassword();
             if (password_verify($password, $passwordDb)) {
                 $this->startSession();
-                $_SESSION['userId'] = $user->getId();
 
+                $_SESSION['userId'] = $user->getId();
                 return true;
             } else {
                 return false;

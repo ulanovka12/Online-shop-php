@@ -124,18 +124,18 @@ class CartController extends BaseController
             exit();
         }
 
-        $userId = $this->authService->getCurrentUser() ?? 1;   // или фиксированное значение
+        $user = $this->authService->getCurrentUser() ?? 1;   // или фиксированное значение
         $productId = (int)$_POST['product_id'];
 
         // Получаем текущую запись
-        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+        $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
 
         if ($existing) {
             $newAmount = $existing->getAmount() - 1;
             if ($newAmount > 0) {
-                $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+                $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $productId);
             } else {
-                $this->user_productsModel->deleteUserProducts($userId, $productId);
+                $this->user_productsModel->deleteUserProducts($user->getId(), $productId);
             }
         }
 
