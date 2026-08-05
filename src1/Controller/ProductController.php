@@ -35,12 +35,20 @@ class ProductController extends BaseController
             exit();
         }
 
-        $user = $this->authService->getCurrentUser() ?? 1;  // если нет сессии – используем гостя (1)
+        $user = $this->authService->getCurrentUser();  // если нет сессии – используем гостя (1)
+//        var_dump($user);
+        if (!$user) {
+            header('Location: /login');
+            exit;
+        }
         $productId = (int)$_POST['product_id'];
         $amount = 1; // всегда добавляем одну единицу
 
         // Проверяем, есть ли уже этот товар у пользователя
+
         $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
+
+
 
         if ($existing === null) {
             // Если нет – вставляем новую запись с количеством 1

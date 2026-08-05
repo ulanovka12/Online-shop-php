@@ -490,7 +490,7 @@
 
                 <!-- footer -->
                 <div class="card-footer">
-                    Already have an account? <a href="/Views/registration_form.php">Sign in</a>
+                    Already have an account? <a href="/logout">Sign in</a>
                 </div>
 
             </div>

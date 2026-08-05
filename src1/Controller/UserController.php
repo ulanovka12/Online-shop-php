@@ -227,7 +227,7 @@ class UserController extends BaseController
 
     public function logout()
     {
-        $this->logout();
+        $this->authService->logout();
         header('location: /login');
         exit;
     }

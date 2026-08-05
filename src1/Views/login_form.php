@@ -20,6 +20,10 @@
 
         <button type="submit" class="btn btn-primary btn-block btn-large">Войти</button>
     </form>
+
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="/registration" class="btn btn-secondary btn-block btn-large">Регистрация</a>
+    </div>
 </div>
 
 <style>
