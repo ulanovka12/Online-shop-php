@@ -45,7 +45,7 @@ class OrderController extends BaseController
             $contactPhone = $_POST['contact_phone'];
             $comment = $_POST['comment'];
             $address = $_POST['address'];
-            $userId = $_SESSION['userId'];
+            $userId = $this->authService->getCurrentUser()->getId();
 
             $order = $this->OrderModel->create($contactName, $contactPhone, $comment, $address, $userId);
 
