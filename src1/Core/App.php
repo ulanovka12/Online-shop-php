@@ -102,6 +102,18 @@ class App
                     'class' => OrderController::class,
                     'method' => 'getAllOrders',
                 ]
+            ],
+        '/logout' => [
+            'GET' => [
+                'class' => UserController::class,
+                'method' => 'logout',
+            ]
+        ],
+        '/updateProfile' => [
+            'GET' => [
+                'class' => UserController::class,
+                'method' => 'updateProfile',
+                ]
             ]
     ];
 

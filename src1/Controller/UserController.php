@@ -158,11 +158,15 @@ class UserController extends BaseController
 
     public function editProfile()
     {
-
         if ($this->authService->check()) {
             $user = $this->authService->getCurrentUser();
-
             $user = $this->userModel->getByIdProfile($user->getId());
+
+            // Забираем ошибки и старые данные из сессии (если есть)
+            $errors = $_SESSION['form_errors'] ?? [];
+            $old = $_SESSION['old_input'] ?? [];
+            $flash = $_SESSION['flash_message'] ?? null;
+            unset($_SESSION['form_errors'], $_SESSION['old_input'], $_SESSION['flash_message']);
 
             require_once '../Views/edit_handle_profile.php';
         } else {
@@ -171,28 +175,63 @@ class UserController extends BaseController
     }
     public function updateProfile()
     {
-        if ($this->authService->getCurrentUser()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
         $user = $this->authService->getCurrentUser();
-        $errors = $this->validateProfileUpdate($_POST, $user->getId());
 
-        if (empty($errors)) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $password = trim($_POST['password'] ?? '');
-            $passwordHash = $password === '' ? null : password_hash($password, PASSWORD_DEFAULT);
+        $userId = $user->getId(); //(!)
 
-            $this->userModel->updateProfile($user->getId(), $name, $email, $passwordHash);
+        // Загружаем текущие данные из БД для сравнения
+        $currentUser = $this->userModel->getByIdProfile($userId);
 
+        $newName = trim($_POST['name'] ?? '');
+        $newEmail = trim($_POST['email'] ?? '');
+        $newPassword = $_POST['password'] ?? '';
+
+        // ---- Проверка на изменения ----
+        $hasChanges = false;
+        if ($newName !== $currentUser->getName()) {
+            $hasChanges = true;
+        }
+        if ($newEmail !== $currentUser->getEmail()) {
+            $hasChanges = true;
+        }
+        if (!empty($newPassword)) {
+            $hasChanges = true;
+        }
+
+        if (!$hasChanges) {
+            $_SESSION['flash_message'] = 'Никаких изменений не обнаружено.';
             header('Location: /profile');
             exit();
         }
 
-        $user = $this->userModel->getByIdProfile($user->getId());
-        require_once '../Views/edit_handle_profile.php';
+        // ---- Валидация (используем ваш существующий метод) ----
+        $errors = $this->validateProfileUpdate($_POST, $userId);
+
+        if (empty($errors)) {
+            // Если пароль не пуст – хешируем, иначе оставляем NULL (не меняем)
+            $passwordHash = empty($newPassword) ? null : password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Обновляем профиль (передаём только те поля, которые нужно изменить)
+            $this->userModel->updateProfile($userId, $newName, $newEmail, $passwordHash);
+
+            $_SESSION['flash_message'] = 'Профиль успешно обновлён!';
+            header('Location: /profile');
+            exit();
+        }
+
+        // Если есть ошибки – сохраняем их и введённые данные в сессию,
+        // Отображение формы
+        $_SESSION['form_errors'] = $errors;
+        $_SESSION['old_input'] = ['name' => $newName, 'email' => $newEmail];
+
+        // Возвращаемся на страницу редактирования
+        header('Location: /profile/edit');
+        exit();
     }
 
     private function validateProfileUpdate(array $data, int $userId): array

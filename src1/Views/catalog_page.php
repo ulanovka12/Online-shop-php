@@ -1,3 +1,83 @@
+<body>
+
+<div class="container">
+    <!-- page header -->
+    <div class="page-header">
+        <h3>🛍️ Catalog</h3>
+        <span class="subtitle">✨ new arrivals</span>
+        <div class="card-footer">
+            <a href="/profile">Профиль</a>
+        </div>
+        <div class="card-footer">
+            <a href="/profile-change">Изменить профиль</a>
+        </div>
+        <div class="card-footer">
+            <a href="/users-orders">Мои заказы</a>
+        </div>
+    </div>
+
+    <!-- card grid -->
+    <div class="card-deck">
+        <?php foreach ($products as $product): ?>
+            <?php $productId = $product->getId(); ?>
+            <div class="card">
+
+                <!-- "Hit!" badge -->
+                <div class="card-header">🔥 Hit!</div>
+
+                <!-- image wrapper -->
+                <div class="card-img-wrapper">
+                    <img
+                            class="card-img-top"
+                            src="<?= htmlspecialchars($product->getImageUrl()); ?>"
+                            alt="<?= htmlspecialchars($product->getName()); ?>"
+                            loading="lazy"
+                    >
+                </div>
+
+                <!-- body -->
+                <div class="card-body">
+                    <p class="card-text"><?= htmlspecialchars($product->getName()); ?></p>
+                    <h5 class="card-title"><?= htmlspecialchars($product->getDescription()); ?></h5>
+
+                    <!-- quantity controls -->
+                    <div class="controls-wrapper">
+                        <!-- add -->
+                        <form action="/add-product" method="POST">
+                            <input type="hidden" name="product_id" value="<?= $productId; ?>">
+                            <button type="submit" class="btn-qty add" aria-label="Add one">＋</button>
+                        </form>
+
+                        <!-- amount -->
+                        <span class="amount-badge">
+                                <?= $product->getAmount(); ?>
+                            </span>
+
+                        <!-- remove -->
+                        <form action="/decrease-product" method="POST">
+                            <input type="hidden" name="product_id" value="<?= $productId; ?>">
+                            <button type="submit" class="btn-qty remove" aria-label="Remove one">−</button>
+                        </form>
+                    </div>
+
+                    <!-- reviews link -->
+                    <a href="/reviews=<?= $productId; ?>" class="btn-open">
+                        💬 Открыть отзывы
+                    </a>
+                </div>
+
+                <!-- footer -->
+                <div class="card-footer">
+                    Already have an account? <a href="/logout">Sign in</a>
+                </div>
+
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+</body>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -429,74 +509,4 @@
         }
     </style>
 </head>
-<body>
-
-<div class="container">
-    <!-- page header -->
-    <div class="page-header">
-        <h3>🛍️ Catalog</h3>
-        <span class="subtitle">✨ new arrivals</span>
-    </div>
-
-    <!-- card grid -->
-    <div class="card-deck">
-        <?php foreach ($products as $product): ?>
-            <?php $productId = $product->getId(); ?>
-            <div class="card">
-
-                <!-- "Hit!" badge -->
-                <div class="card-header">🔥 Hit!</div>
-
-                <!-- image wrapper -->
-                <div class="card-img-wrapper">
-                    <img
-                            class="card-img-top"
-                            src="<?= htmlspecialchars($product->getImageUrl()); ?>"
-                            alt="<?= htmlspecialchars($product->getName()); ?>"
-                            loading="lazy"
-                    >
-                </div>
-
-                <!-- body -->
-                <div class="card-body">
-                    <p class="card-text"><?= htmlspecialchars($product->getName()); ?></p>
-                    <h5 class="card-title"><?= htmlspecialchars($product->getDescription()); ?></h5>
-
-                    <!-- quantity controls -->
-                    <div class="controls-wrapper">
-                        <!-- add -->
-                        <form action="/add-product" method="POST">
-                            <input type="hidden" name="product_id" value="<?= $productId; ?>">
-                            <button type="submit" class="btn-qty add" aria-label="Add one">＋</button>
-                        </form>
-
-                        <!-- amount -->
-                        <span class="amount-badge">
-                                <?= $product->getAmount(); ?>
-                            </span>
-
-                        <!-- remove -->
-                        <form action="/decrease-product" method="POST">
-                            <input type="hidden" name="product_id" value="<?= $productId; ?>">
-                            <button type="submit" class="btn-qty remove" aria-label="Remove one">−</button>
-                        </form>
-                    </div>
-
-                    <!-- reviews link -->
-                    <a href="/reviews?product_id=<?= $productId; ?>" class="btn-open">
-                        💬 Открыть отзывы
-                    </a>
-                </div>
-
-                <!-- footer -->
-                <div class="card-footer">
-                    Already have an account? <a href="/logout">Sign in</a>
-                </div>
-
-            </div>
-        <?php endforeach; ?>
-    </div>
-</div>
-
-</body>
 </html>

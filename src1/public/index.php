@@ -18,6 +18,7 @@ $app->post('/login',  UserController::class, 'login');
 $app->get('/logout',  \Controller\UserController::class, 'logout');
 $app->get('/catalog', \Controller\ProductController::class, 'Catalog' );
 $app->get('/profile', \Controller\ProfileController::class, 'Profile' );
+$app->get('/update-profile', \Controller\ProfileController::class, 'UpdateProfile' );
 $app->get('/cart', \Controller\CartController::class, 'cart' );
 $app->post('/update-cart',  \Controller\CartController::class, 'updateCart' );
 $app->get('/remove-from-cart',  \Controller\CartController::class, 'removeFromCart' );

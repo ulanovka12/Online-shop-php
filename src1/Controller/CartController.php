@@ -22,7 +22,7 @@ class CartController extends BaseController
 
     public function cart()
     {
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
