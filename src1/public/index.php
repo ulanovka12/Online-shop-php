@@ -16,6 +16,11 @@ $app->post('/registration', \Controller\UserController::class, 'Registrate');
 $app->get('/login',  \Controller\UserController::class, 'getLogin');
 $app->post('/login',  UserController::class, 'login');
 $app->get('/logout',  \Controller\UserController::class, 'logout');
+
+$app->get('/reviews', \Controller\ReviewsController::class, 'getReviews');
+
+
+
 $app->get('/catalog', \Controller\ProductController::class, 'Catalog' );
 $app->get('/profile', \Controller\ProfileController::class, 'Profile' );
 $app->get('/update-profile', \Controller\ProfileController::class, 'UpdateProfile' );

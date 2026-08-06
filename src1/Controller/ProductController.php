@@ -49,7 +49,6 @@ class ProductController extends BaseController
         $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
 
 
-
         if ($existing === null) {
             // Если нет – вставляем новую запись с количеством 1
             $this->user_productsModel->insertUserProduct($user->getId(), $productId, $amount);
@@ -62,6 +61,7 @@ class ProductController extends BaseController
         header("Location: /catalog");
         exit();
     }
+
     private function validateProduct($data)
     {
         $errors = [];
@@ -101,7 +101,7 @@ class ProductController extends BaseController
             header("Location: /login");
             exit(); // редирект на логин
         } else {
-            $userId = is_object($user) ? $user->getId() : (int) $user;
+            $userId = is_object($user) ? $user->getId() : (int)$user;
             $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
         }
 
@@ -121,4 +121,5 @@ class ProductController extends BaseController
         // Передаём в представление
         require_once '../Views/catalog_page.php';
     }
+
 }

@@ -61,7 +61,7 @@
                     </div>
 
                     <!-- reviews link -->
-                    <a href="/reviews=<?= $productId; ?>" class="btn-open">
+                    <a href="/reviews?product_id=<?= $product->getId(); ?>" class="btn-open">
                         💬 Открыть отзывы
                     </a>
                 </div>

@@ -23,6 +23,7 @@ class UserController extends BaseController
         }
         require_once '../Views/registration_form.php';
     }
+
     public function registrate()
     {
 
@@ -106,7 +107,7 @@ class UserController extends BaseController
     public function getLogin()
     {
 
-       $this->authService->check();
+        $this->authService->check();
         require_once '../Views/login_form.php';
     }
 
@@ -141,6 +142,7 @@ class UserController extends BaseController
         }
         return $errors;
     }
+
     public function profile()
     {
         if ($this->authService->check()) {
@@ -173,6 +175,7 @@ class UserController extends BaseController
             header('location: /login');
         }
     }
+
     public function updateProfile()
     {
         if (!$this->authService->check()) {
@@ -242,20 +245,19 @@ class UserController extends BaseController
         if (!empty($errorName)) {
             $errors['name'] = $errorName;
         }
-        if (isset($data['email'])){
+        if (isset($data['email'])) {
             $email = $data['email'];
             if (strlen($email) < 3) {
                 $errors['email'] = 'Email не может содержать меньше 3 символов';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors['email'] = 'Неправильный email';
-            }else{
+            } else {
                 $user = $this->userModel->getByEmail($email);
                 if ($user !== null && $user->getId() !== $userId) {
                     $errors['email'] = 'Этот Email уже существует';
                 }
             }
-        }
-        else{
+        } else {
             $errors['email'] = 'Этот email должен быть заполнен!';
         }
         if (isset($data['password']) && trim($data['password']) !== '' && strlen(trim($data['password'])) < 5) {
@@ -270,6 +272,5 @@ class UserController extends BaseController
         header('location: /login');
         exit;
     }
-
 }
 
