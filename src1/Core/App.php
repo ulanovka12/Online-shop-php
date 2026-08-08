@@ -5,10 +5,8 @@ namespace Core;
 use Controller\CartController;
 use Controller\OrderController;
 use Controller\ProductController;
-use Controller\reviews;
 use Controller\ReviewsController;
 use Controller\UserController;
-use Service\AuthService;
 
 class App
 {
@@ -123,8 +121,13 @@ class App
                 'class' => ReviewsController::class,
                 'method' => 'getReviews',
             ],
+        ],
+        '/review' => [
+            'POST' => [
+                'class' => ReviewsController::class,
+                'method' => 'Reviews',
+            ]
         ]
-
     ];
 
 

@@ -33,7 +33,7 @@ class OrderController extends BaseController
     public function handleCheckout()
     {
 
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
