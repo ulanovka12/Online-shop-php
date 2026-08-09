@@ -7,12 +7,10 @@ use Model\User_products;
 class CartService
 {
     private User_products $user_productsModel;
-    private AuthService $authService;
 
     public function __construct()
     {
         $this->user_productsModel = new User_products();
-        $this->authService = new AuthService();
     }
 
 

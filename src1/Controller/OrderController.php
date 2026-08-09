@@ -5,7 +5,7 @@ namespace Controller;
 use Model\Order;
 use Model\Product;
 use Model\Order_products;
-use Model\User_products;
+use Service\OrderService;
 
 
 class OrderController extends BaseController
@@ -13,7 +13,7 @@ class OrderController extends BaseController
     private Order $OrderModel;
     private Order_products $order_productsModel;
     private Product $product;
-    private User_products $user_productsModel;
+    private OrderService $orderService;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class OrderController extends BaseController
         $this->OrderModel = new Order();
         $this->order_productsModel = new Order_products();
         $this->product = new Product();
-        $this->user_productsModel = new User_products();
+        $this->orderService = new OrderService();
     }
 
 
@@ -38,38 +38,39 @@ class OrderController extends BaseController
             exit();
         }
 
+        // Валидация данных из POST
         $errors = $this->validate($_POST);
 
-        if (empty($errors)) {
-            $contactName = $_POST['contact_name'];
-            $contactPhone = $_POST['contact_phone'];
-            $comment = $_POST['comment'];
-            $address = $_POST['address'];
-            $userId = $this->authService->getCurrentUser()->getId();
+        // Если есть ошибки – показываем форму снова
+        if (!empty($errors)) {
+            require_once './../Views/order_form.php';
+            return;
+        }
 
-            $order = $this->OrderModel->create($contactName, $contactPhone, $comment, $address, $userId);
+        // Подготовка данных для сервиса
+        $orderData = [
+            'contact_name'  => trim($_POST['contact_name']),
+            'contact_phone' => trim($_POST['contact_phone']),
+            'comment'       => trim($_POST['comment'] ?? ''),
+            'address'       => trim($_POST['address']),
+        ];
 
-            $orderId = $order->getId();
+        $userId = $this->authService->getCurrentUser()->getId();
 
-            $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+        try {
+            // Вызов сервиса с передачей данных и ID пользователя
+            $orderId = $this->orderService->createOrder($userId, $orderData);
 
-            foreach ($userProducts as $userProduct) {
-
-                $productId = $userProduct->getProductId();
-                $amount = $userProduct->getAmount();
-
-                $this->order_productsModel->create1($orderId, $productId, $amount);
-
-            }
-            $this->user_productsModel->deleteByUserId($userId);
-
+            //success
             header('Location: /users-orders');
             exit();
-        } else {
-
+        } catch (\Exception $e) {
+            // Обработка ошибок
+            $errors[] = $e->getMessage();
             require_once './../Views/order_form.php';
         }
-    }
+}
+
 
     private function validate(array $data): array
     {

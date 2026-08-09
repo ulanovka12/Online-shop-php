@@ -72,8 +72,6 @@ class Order extends Model
         $obj->address = $address;
         $obj->userId = $userId;
         return $obj;
-
-//        return $data['id'];
     }
 
     public function getId(): int
