@@ -32,44 +32,19 @@ class CartService
     }
 
     // Уменьшить на 1 (или удалить, если станет 0)
-
     public function decreaseProductFromCart(int $productId, int $userId, int $amount)
     {
-        error_log("=== decreaseProductFromCart ===");
-        error_log("productId: $productId, userId: $userId, amount: $amount");
-
+        // Получаем текущую запись
         $existing = $this->user_productsModel->getUserProduct($productId, $userId);
-        error_log("existing: " . ($existing ? 'found' : 'null'));
 
         if ($existing) {
-            $oldAmount = $existing->getAmount();
-            $newAmount = $oldAmount - $amount;
-            error_log("oldAmount: $oldAmount, newAmount: $newAmount");
-
+            $newAmount = $existing->getAmount() - $amount;
             if ($newAmount > 0) {
-                $result = $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
-                error_log("update result: " . ($result ? 'true' : 'false'));
+                $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
             } else {
-                $result = $this->user_productsModel->deleteUserProducts($userId, $productId);
-                error_log("delete result: " . ($result ? 'true' : 'false'));
+                $this->user_productsModel->deleteUserProducts($userId, $productId);
             }
-        } else {
-            error_log("Запись не найдена, ничего не делаем");
         }
     }
-//    public function decreaseProductFromCart(int $productId, int $userId, int $amount)
-//    {
-//        // Получаем текущую запись
-//        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
-//
-//        if ($existing) {
-//            $newAmount = $existing->getAmount() - $amount;
-//            if ($newAmount > 0) {
-//                $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
-//            } else {
-//                $this->user_productsModel->deleteUserProducts($userId, $productId);
-//            }
-//        }
-//    }
 
 }
