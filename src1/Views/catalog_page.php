@@ -16,16 +16,13 @@
         </div>
     </div>
 
-    <!-- card grid -->
     <div class="card-deck">
         <?php foreach ($products as $product): ?>
             <?php $productId = $product->getId(); ?>
             <div class="card">
 
-                <!-- "Hit!" badge -->
                 <div class="card-header">🔥 Hit!</div>
 
-                <!-- image wrapper -->
                 <div class="card-img-wrapper">
                     <img
                             class="card-img-top"
@@ -35,12 +32,11 @@
                     >
                 </div>
 
-                <!-- body -->
+
                 <div class="card-body">
                     <p class="card-text"><?= htmlspecialchars($product->getName()); ?></p>
                     <h5 class="card-title"><?= htmlspecialchars($product->getDescription()); ?></h5>
 
-                    <!-- quantity controls -->
                     <div class="controls-wrapper">
                         <!-- add -->
                         <form action="/add-product" method="POST">
@@ -48,25 +44,22 @@
                             <button type="submit" class="btn-qty add" aria-label="Add one">＋</button>
                         </form>
 
-                        <!-- amount -->
+
                         <span class="amount-badge">
                                 <?= $product->getAmount(); ?>
                             </span>
 
-                        <!-- remove -->
                         <form action="/decrease-product" method="POST">
                             <input type="hidden" name="product_id" value="<?= $productId; ?>">
                             <button type="submit" class="btn-qty remove" aria-label="Remove one">−</button>
                         </form>
                     </div>
 
-                    <!-- reviews link -->
                     <a href="/reviews?product_id=<?= $product->getId(); ?>" class="btn-open">
                         💬 Открыть отзывы
                     </a>
                 </div>
 
-                <!-- footer -->
                 <div class="card-footer">
                     Already have an account? <a href="/logout">Sign in</a>
                 </div>
@@ -88,7 +81,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
-        /* ── reset & base ── */
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -112,7 +105,6 @@
             margin: 0 auto;
         }
 
-        /* ── page header ── */
         .page-header {
             display: flex;
             align-items: baseline;
@@ -150,14 +142,12 @@
             font-weight: 500;
         }
 
-        /* ── card grid ── */
         .card-deck {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.75rem;
         }
 
-        /* ── card ── */
         .card {
             background: #ffffff;
             border-radius: 20px;
@@ -176,7 +166,6 @@
             box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 4px 18px rgba(0, 0, 0, 0.05);
         }
 
-        /* ── hit badge ── */
         .card-header {
             position: absolute;
             top: 14px;
@@ -194,8 +183,6 @@
             border: none;
             line-height: 1.4;
         }
-
-        /* ── image ── */
         .card-img-top {
             width: 100%;
             height: 220px;
@@ -216,7 +203,6 @@
             background: #f8fafc;
         }
 
-        /* ── card body ── */
         .card-body {
             padding: 1.25rem 1.25rem 1rem;
             display: flex;
@@ -245,7 +231,6 @@
             overflow: hidden;
         }
 
-        /* ── controls ── */
         .controls-wrapper {
             display: flex;
             align-items: center;
@@ -333,7 +318,6 @@
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        /* ── reviews link ── */
         .btn-open {
             display: block;
             width: 100%;
@@ -362,7 +346,6 @@
             transform: scale(0.98);
         }
 
-        /* ── card footer ── */
         .card-footer {
             padding: 0.85rem 1.25rem 1rem;
             background: #f8fafc;
@@ -385,7 +368,6 @@
             text-decoration: underline;
         }
 
-        /* ── empty state ── */
         .empty-state {
             text-align: center;
             padding: 4rem 1rem;
@@ -397,7 +379,6 @@
             margin-bottom: 1rem;
         }
 
-        /* ── responsive ── */
         @media (max-width: 640px) {
             body {
                 padding: 1rem;
@@ -447,7 +428,6 @@
             }
         }
 
-        /* ── subtle animation on load ── */
         .card {
             opacity: 0;
             animation: fadeUp 0.5s ease forwards;
@@ -489,7 +469,6 @@
             }
         }
 
-        /* ── scrollbar polish ── */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;

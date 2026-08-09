@@ -9,11 +9,18 @@ class Reviews extends Model
     private string $description;
     private int $product_id;
     private int $user_id;
+
+
+    protected function getTableName(): string
+    {
+        return "reviews";
+    }
+
     //получаю все отзывы
     public function getByProductId(int $productId): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM reviews WHERE product_id = :product_id"
+            "SELECT * FROM {$this->getTableName()} WHERE product_id = :product_id"
         );
         $stmt->execute(['product_id' => $productId]);
         $rows = $stmt->fetchAll();
@@ -35,7 +42,7 @@ class Reviews extends Model
     public function create(int $productId, int $userId, string $name, string $description): bool
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO reviews (product_id, user_id, name, description) 
+            "INSERT INTO {$this->getTableName()} (product_id, user_id, name, description) 
              VALUES (:product_id, :user_id, :name, :description)"
         );
         return $stmt->execute([

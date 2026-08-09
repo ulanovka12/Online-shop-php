@@ -32,7 +32,7 @@ unset($_SESSION['review_success'], $_SESSION['review_error']);
     <?php endif; ?>
 </div>
 
-<!-- Карусель отзывов -->
+<!-- Карусель Мощных отзывов -->
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -68,7 +68,7 @@ unset($_SESSION['review_success'], $_SESSION['review_error']);
     </div>
 </div>
 
-<!-- Форма добавления отзыва (только для авторизованных) -->
+<!-- Форма добавления отзыва (только для тех кто авторизовался) -->
 <?php if ($currentUser): ?>
     <div class="container review-form">
         <form method="POST" action="/reviews?product_id=<?= $productId ?>">

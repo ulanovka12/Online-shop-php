@@ -37,10 +37,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль</title>
-    <!-- Font Awesome для иконок -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        /* ---------- Общие стили (оставляем как было) ---------- */
+
         html {
             height: 100%;
         }
@@ -82,7 +82,6 @@
         h2 { font-size: 16px; }
         p { margin: 0px; }
 
-        /* ---------- НОВАЯ ПАНЕЛЬ НАВИГАЦИИ (поверх всего) ---------- */
         .top-nav {
             position: fixed;
             top: 0;
@@ -119,8 +118,6 @@
         .top-nav a:active {
             transform: scale(0.95);
         }
-
-        /* ---------- Профильная карточка (без изменений, только z-index понижен) ---------- */
         .profile-card {
             background: #FFB300;
             width: 56px;
@@ -256,7 +253,6 @@
             width: 24px;
         }
 
-        /* ---------- Анимации (без изменений) ---------- */
         @-webkit-keyframes init {
             0% { width: 0px; height: 0px; }
             100% { width: 56px; height: 56px; margin-top: 0px; opacity: 1; }
@@ -328,7 +324,6 @@
             100% { transform: scale(1); }
         }
 
-        /* ---------- Адаптив (без изменений) ---------- */
         @media screen and (min-aspect-ratio: 4/3) {
             body { background-size: cover; }
             body:before { width: 0px; }

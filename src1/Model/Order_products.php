@@ -9,10 +9,14 @@ class Order_products extends Model
     private int $product_id;
     private int $amount;
 
+    protected function getTableName(): string
+    {
+        return "order_products";
+    }
 
     public function create1 (int $orderId, int $productId, int $amount): self|null
     {
-        $stmt = $this->pdo->prepare("INSERT INTO order_products (order_id, product_id, amount) VALUES (:orderId, :productId, :amount)");
+        $stmt = $this->pdo->prepare("INSERT INTO {$this->getTableName()} (order_id, product_id, amount) VALUES (:orderId, :productId, :amount)");
         $stmt->execute([
             'orderId' => $orderId,
             'productId' => $productId,
@@ -24,7 +28,7 @@ class Order_products extends Model
         if (!$lastId) {
             return null;
         }
-        $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :id");
         $stmt->execute(['id' => $lastId]);
         $data = $stmt->fetch();
 
@@ -46,7 +50,7 @@ class Order_products extends Model
 
     public function getAllByOrderId(int $orderId): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :orderId");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE order_id = :orderId");
         $stmt->execute(['orderId' => $orderId]);
 
         $orderProductsData = $stmt->fetchAll();
@@ -68,13 +72,13 @@ class Order_products extends Model
 
     public function deleteByUserId(int $orderId)
     {
-        $stmt = $this->pdo->prepare("DELETE FROM order_products WHERE order_id = :orderId");
+        $stmt = $this->pdo->prepare("DELETE FROM {$this->getTableName()} WHERE order_id = :orderId");
         $stmt->execute(['orderId' => $orderId]);
     }
 
     public function getByAllOrderId(int $orderId): ?array
     {
-    $stmt = $this->pdo->prepare("SELECT * FROM order_products WHERE order_id = :$orderId");
+    $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE order_id = :$orderId");
     $stmt->execute(['orderId' => $orderId]);
 
     $orderProductsData = $stmt->fetchAll();

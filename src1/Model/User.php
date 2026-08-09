@@ -13,10 +13,15 @@ class User extends Model
     private ?string $psw = null;
     private string $image_url = '';
 
+    protected function getTableName(): string
+    {
+        return "users";
+    }
+
     public function getByEmail(string $email): self|null
     {
 
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE email = :email");
         $stmt->execute(['email' => $email]);
 
         $result = $stmt->fetch();
@@ -39,7 +44,7 @@ class User extends Model
     public function getByUsername(string $name, string $email, string $password): self|null
     {
 
-        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password) RETURNING id, name, email, password, image_url");
+        $stmt = $this->pdo->prepare("INSERT INTO {$this->getTableName()} (name, email, password) VALUES (:name, :email, :password) RETURNING id, name, email, password, image_url");
         $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password]);
 
         $result = $stmt->fetch();
@@ -62,7 +67,7 @@ class User extends Model
     public function getByIdProfile(int $userId): self|null
     {
 
-        $stmt = $this->pdo->query("SELECT * FROM users WHERE id = $userId");
+        $stmt = $this->pdo->query("SELECT * FROM {$this->getTableName()} WHERE id = $userId");
         $user = $stmt->fetch();
 
         if ($user === false)
@@ -85,7 +90,7 @@ class User extends Model
     {
         if ($passwordHash !== null) {
             $stmt = $this->pdo->prepare(
-                "UPDATE users SET name = :name, email = :email, password = :password WHERE id = :id"
+                "UPDATE {$this->getTableName()} SET name = :name, email = :email, password = :password WHERE id = :id"
             );
             $stmt->execute([
                 'name' => $name,
@@ -96,7 +101,7 @@ class User extends Model
             return;
         }
 
-        $stmt = $this->pdo->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
+        $stmt = $this->pdo->prepare("UPDATE {$this->getTableName()} SET name = :name, email = :email WHERE id = :id");
         $stmt->execute([
             'name' => $name,
             'email' => $email,

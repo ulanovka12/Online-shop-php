@@ -11,9 +11,14 @@ class Product extends Model
     private string $image_url;
     private ?int $amount = null;
 
+    protected function getTableName(): string
+    {
+        return "products";
+    }
+
     public function getAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM products");
+        $stmt = $this->pdo->query("SELECT * FROM {$this->getTableName()}");
         $products = $stmt->fetchAll();
 
         if ($products === false || count($products) === 0) {
@@ -40,7 +45,7 @@ class Product extends Model
 
     public function ValidateProductData(int $productId): self|null
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :productId");
         $stmt->execute(['productId' => $productId]);
         $productData = $stmt->fetch();
 
@@ -63,7 +68,7 @@ class Product extends Model
     public function getOneById(int $productId): self|null
     {
 
-        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :productId");
         $stmt->execute(['productId' => $productId]);
         $product = $stmt->fetch();
 

@@ -79,7 +79,6 @@
         margin: 0 auto;
     }
 
-    /* Навигация */
     .profile-nav {
         display: flex;
         gap: 20px;
@@ -109,14 +108,12 @@
         font-weight: 500;
     }
 
-    /* Сетка заказов */
     .orders-grid {
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
-    /* Карточка заказа */
     .order-card {
         background: #fff;
         border-radius: 16px;
@@ -174,7 +171,6 @@
         margin-right: 8px;
     }
 
-    /* Таблица товаров */
     .order-products {
         padding: 0 24px;
         overflow-x: auto;
@@ -205,7 +201,6 @@
         border-bottom: none;
     }
 
-    /* Подвал заказа */
     .order-footer {
         padding: 16px 24px 20px;
         background: #fff;
@@ -257,7 +252,6 @@
         color: #fff;
     }
 
-    /* Адаптивность */
     @media (max-width: 768px) {
         .order-header {
             flex-direction: column;
