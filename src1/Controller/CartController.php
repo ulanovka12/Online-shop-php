@@ -5,11 +5,13 @@ namespace Controller;
 use Model\Product;
 use Model\User_products;
 use Service\AuthService;
+use Service\CartService;
 
 class CartController extends BaseController
 {
     private Product $product;
     private User_products $user_productsModel;
+    private CartService $cartService;
 
 
     public function __construct()
@@ -17,6 +19,7 @@ class CartController extends BaseController
         parent::__construct();
         $this->product = new Product();
         $this->user_productsModel = new User_products();
+        $this->cartService = new CartService();
 
     }
 
@@ -100,46 +103,48 @@ class CartController extends BaseController
         exit();
     }
 
-    public function addProduct(int $productId, int $userId)
+    public function addProduct()
     {
-        // Проверяем, есть ли уже запись
-        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+        $user = $this->authService->getCurrentUser();
 
-        if ($existing === null) {
-            // Вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($userId, $productId, 1);
-        } else {
-            // Увеличиваем количество на 1
-            $newAmount = $existing->getAmount() + 1;
-            $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
-        }
+        // Получаем ID товара из запроса
+        $productId = (int) $_POST['productId'];
+        $amount = (int) $_POST['amount']; // количество, которое хочет добавить пользователь
+
+        $this->cartService->addProduct($productId, $user->getId(), $amount);
+
+        header('Location: /catalog');
+        exit;
     }
 
-    // Уменьшить на 1 (или удалить, если станет 0)
     public function decreaseProductFromCart()
     {
-        // Проверяем, что это POST-запрос и передан product_id
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
-            header("Location: /catalog");
-            exit();
+        $user = $this->authService->getCurrentUser();
+        if (!$user) {
+            header('Location: /login');
+            exit;
         }
 
-        $user = $this->authService->getCurrentUser() ?? 1;   // или фиксированное значение
-        $productId = (int)$_POST['product_id'];
-
-        // Получаем текущую запись
-        $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
-
-        if ($existing) {
-            $newAmount = $existing->getAmount() - 1;
-            if ($newAmount > 0) {
-                $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $productId);
-            } else {
-                $this->user_productsModel->deleteUserProducts($user->getId(), $productId);
-            }
+        // Проверка на наличие product_id
+        if (!isset($_POST['product_id'])) {
+            $_SESSION['error'] = 'Не передан идентификатор товара';
+            header('Location: /catalog');
+            exit;
         }
 
-        header("Location: /catalog");
-        exit();
+        $productId = (int) $_POST['product_id'];
+        // Если amount не передан, уменьшаем на 1
+        $amount = isset($_POST['amount']) ? (int) $_POST['amount'] : 1;
+
+        if ($amount <= 0) {
+            $_SESSION['error'] = 'Количество должно быть больше нуля';
+            header('Location: /catalog');
+            exit;
+        }
+
+        $this->cartService->decreaseProductFromCart($productId, $user->getId(), $amount);
+
+        header('Location: /catalog');
+        exit;
     }
 }
