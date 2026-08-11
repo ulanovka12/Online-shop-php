@@ -2,6 +2,8 @@
 
 namespace Controller;
 
+use DTO\CartCreateDTO;
+use DTO\OrderCreateDTO;
 use Model\Product;
 use Model\User_products;
 use Service\CartService;
@@ -105,12 +107,21 @@ class CartController extends BaseController
     public function addProduct()
     {
         $user = $this->authService->getCurrentUser();
+        if (!$user) {
+            header('Location: /login');
+            exit;
+        }
 
-        // Получаем ID товара из запроса
-        $productId = (int) $_POST['productId'];
-        $amount = (int) $_POST['amount']; // количество, которое хочет добавить пользователь
+        $productId = ($_POST['product_id']);
+        $amount = ($_POST['amount']);
 
-        $this->cartService->addProduct($productId, $user->getId(), $amount);
+        if ($productId <= 0 || $amount <= 0) {
+            header('Location: /catalog');
+            exit;
+        }
+
+        $dto = new CartCreateDTO($user->getId(), $productId, $amount);
+        $this->cartService->addProduct($dto);
 
         header('Location: /catalog');
         exit;
@@ -124,24 +135,21 @@ class CartController extends BaseController
             exit;
         }
 
-        // Проверка на наличие product_id
         if (!isset($_POST['product_id'])) {
-            $_SESSION['error'] = 'Не передан идентификатор товара';
             header('Location: /catalog');
             exit;
         }
 
-        $productId = (int) $_POST['product_id'];
-        // Если amount не передан, уменьшаем на 1
-        $amount = isset($_POST['amount']) ? (int) $_POST['amount'] : 1;
+        $productId = (int)$_POST['product_id'];
+        $amount = isset($_POST['amount']) ? (int)$_POST['amount'] : 1;
 
-        if ($amount <= 0) {
-            $_SESSION['error'] = 'Количество должно быть больше нуля';
+        if ($productId <= 0 || $amount <= 0) {
             header('Location: /catalog');
             exit;
         }
+        $dto = new CartCreateDTO($user->getId(), $productId, $amount);
 
-        $this->cartService->decreaseProductFromCart($productId, $user->getId(), $amount);
+        $this->cartService->decreaseProductFromCart($dto);
 
         header('Location: /catalog');
         exit;

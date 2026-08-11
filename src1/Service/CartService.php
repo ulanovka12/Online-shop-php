@@ -3,6 +3,7 @@
 namespace Service;
 
 use Model\User_products;
+use DTO\CartCreateDTO;
 
 class CartService
 {
@@ -14,35 +15,36 @@ class CartService
     }
 
 
-    public function addProduct(int $productId, int $userId, int $amount)
+    public function addProduct(CartCreateDTO $data):int
     {
         // Проверяем, есть ли уже запись
-        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+        $existing = $this->user_productsModel->getUserProduct($data->getProductId(), $data->getUserId());
 
         if ($existing === null) {
             // Вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($userId, $productId, $amount);
+            $this->user_productsModel->insertUserProduct($data->getUserId(), $data->getProductId(), $data->getAmount());
         } else {
             // Увеличиваем количество на 1
-            $newAmount = $existing->getAmount() + $amount;
-            $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+            $newAmount = $existing->getAmount() + $data->getAmount();
+            $this->user_productsModel->updateUserProduct($newAmount, $data->getUserId(), $data->getProductId());
         }
+        return $newAmount;
     }
 
     // Уменьшить на 1 (или удалить, если станет 0)
-    public function decreaseProductFromCart(int $productId, int $userId, int $amount)
+    public function decreaseProductFromCart(CartCreateDTO $data): int
     {
         // Получаем текущую запись
-        $existing = $this->user_productsModel->getUserProduct($productId, $userId);
+        $existing = $this->user_productsModel->getUserProduct($data->getProductId(), $data->getUserId());
 
         if ($existing) {
-            $newAmount = $existing->getAmount() - $amount;
+            $newAmount = $existing->getAmount() - $data->getAmount();
             if ($newAmount > 0) {
-                $this->user_productsModel->updateUserProduct($newAmount, $userId, $productId);
+                $this->user_productsModel->updateUserProduct($newAmount, $data->getUserId(), $data->getProductId());
             } else {
-                $this->user_productsModel->deleteUserProducts($userId, $productId);
+                $this->user_productsModel->deleteUserProducts($data->getUserId(), $data->getProductId());
             }
         }
+        return $newAmount;
     }
-
 }
