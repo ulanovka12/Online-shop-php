@@ -94,7 +94,7 @@ class User_products extends Model
 
         return $obj;
     }
-    public function deleteByUserId(int $userId): void
+    public function deleteByUserId($userId): void
     {
         $stmt = $this->pdo->prepare("DELETE FROM {$this->getTableName()} WHERE user_id = :userId");
         $stmt->execute(['userId' => $userId]);

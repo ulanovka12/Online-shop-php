@@ -159,14 +159,6 @@ class App
        }
     }
 
-//    public function  addRoute(string $route, string $routeMethod, string $className, string $method)
-//    {
-//        $this->routes[$route][$routeMethod] = [
-//                'class' => $className,
-//                'method' => $method,
-//        ];
-//    }
-
     public function get(string $route, string $className, string $method)
     {
         $this->routes[$route]['GET'] = [

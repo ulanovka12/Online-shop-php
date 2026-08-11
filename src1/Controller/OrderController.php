@@ -2,11 +2,11 @@
 
 namespace Controller;
 
+use DTO\OrderCreateDTO;
 use Model\Order;
 use Model\Product;
 use Model\Order_products;
 use Service\OrderService;
-
 
 class OrderController extends BaseController
 {
@@ -32,44 +32,46 @@ class OrderController extends BaseController
 
     public function handleCheckout()
     {
-
         if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
 
-        // Валидация данных из POST
+        $data = $_POST;
         $errors = $this->validate($_POST);
 
-        // Если есть ошибки – показываем форму снова
         if (!empty($errors)) {
             require_once './../Views/order_form.php';
             return;
         }
 
-        // Подготовка данных для сервиса
-        $orderData = [
-            'contact_name'  => trim($_POST['contact_name']),
-            'contact_phone' => trim($_POST['contact_phone']),
-            'comment'       => trim($_POST['comment'] ?? ''),
-            'address'       => trim($_POST['address']),
-        ];
-
-        $userId = $this->authService->getCurrentUser()->getId();
+        $user = $this->authService->getCurrentUser();
+        if (!$user) {
+            header("Location: /login");
+            exit();
+        }
 
         try {
-            // Вызов сервиса с передачей данных и ID пользователя
-            $orderId = $this->orderService->createOrder($userId, $orderData);
 
-            //success
+            $dto = new OrderCreateDTO
+            (
+                $data['contact_name'],
+                $data['contact_phone'],
+                $data['comment'],
+                $data['address'],
+                $user
+            );
+
+            // Передаём и DTO,и пользователя
+            $orderId = $this->orderService->createOrder($dto);
+
             header('Location: /users-orders');
             exit();
         } catch (\Exception $e) {
-            // Обработка ошибок
-            $errors[] = $e->getMessage();
+            $errorMessage = $e->getMessage();
             require_once './../Views/order_form.php';
         }
-}
+    }
 
 
     private function validate(array $data): array

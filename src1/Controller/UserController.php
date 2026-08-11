@@ -3,7 +3,6 @@
 namespace Controller;
 
 use Model\User;
-use Service\AuthService;
 
 class UserController extends BaseController
 {
@@ -212,7 +211,7 @@ class UserController extends BaseController
             exit();
         }
 
-        // ---- Валидация (используем ваш существующий метод) ----
+        // ---- Валидация
         $errors = $this->validateProfileUpdate($_POST, $userId);
 
         if (empty($errors)) {

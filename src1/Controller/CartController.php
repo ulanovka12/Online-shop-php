@@ -4,7 +4,6 @@ namespace Controller;
 
 use Model\Product;
 use Model\User_products;
-use Service\AuthService;
 use Service\CartService;
 
 class CartController extends BaseController
@@ -98,7 +97,7 @@ class CartController extends BaseController
             exit();
         }
         $user = $this->authService->getCurrentUser();
-        $this->user_productsModel->deleteByUserId($user->getId());
+        $this->user_productsModel->deleteByUserId($user);
         header('Location: /cart');
         exit();
     }

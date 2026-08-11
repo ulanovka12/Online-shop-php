@@ -5,6 +5,7 @@ namespace Service;
 use Model\Order;
 use Model\order_products;
 use Model\User_products;
+use DTO\OrderCreateDTO;
 
 class OrderService
 {
@@ -19,23 +20,23 @@ class OrderService
         $this->order_productsModel = new order_products();
     }
 
-    public function createOrder(int $userId, array $data): int
+    public function createOrder(OrderCreateDTO $data):int
     {
 
 
         // Создаём заказ
         $order = $this->OrderModel->create(
-            $data['contact_name'],
-            $data['contact_phone'],
-            $data['comment'],
-            $data['address'],
-            $userId
+            $data->getContactName(),
+            $data->getContactPhone(),
+            $data->getComment(),
+            $data->getAddress(),
+            $data->getUser()->getId(),
         );
 
         $orderId = $order->getId();
 
         // Получаем товары из корзины пользователя
-        $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+        $userProducts = $this->user_productsModel->getAllUserProductByUserId($data->getUser()->getId());
 
         foreach ($userProducts as $userProduct) {
             $this->order_productsModel->create1(
@@ -46,7 +47,7 @@ class OrderService
         }
 
         // Очищаем корзину
-        $this->user_productsModel->deleteByUserId($userId);
+        $this->user_productsModel->deleteByUserId($data->getUser()->getId());
 
         return $orderId;
     }
