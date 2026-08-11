@@ -1,5 +1,6 @@
 <div class="users-order">
     <div class="profile-nav">
+        <a href="/catalog" class="nav-link">🛒👤 Перейти в каталог</a>
         <a href="/profile" class="nav-link">👤 Мой профиль</a>
         <a href="/cart" class="nav-link">🛒 Добавить в корзину</a>
     </div>

@@ -5,6 +5,7 @@
     <a href="/catalog">Каталог</a>
     <a href="/cart">Корзина</a>
     <a href="/users-orders">Мои заказы</a>
+    <a href="/profile-change">Изменить Профиль</a>
 </nav>
 
 <!-- Профильная карточка-->
