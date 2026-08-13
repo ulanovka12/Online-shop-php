@@ -30,14 +30,13 @@ class OrderController extends BaseController
         require_once './../Views/order_form.php';
     }
 
-    public function handleCheckout()
+    public function handleCheckout(array $data)
     {
         if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
 
-        $data = $_POST;
         $errors = $this->validate($_POST);
 
         if (!empty($errors)) {

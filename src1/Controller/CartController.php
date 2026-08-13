@@ -6,6 +6,7 @@ use DTO\CartCreateDTO;
 use DTO\OrderCreateDTO;
 use Model\Product;
 use Model\User_products;
+use Request\AddProductRequest;
 use Service\CartService;
 
 class CartController extends BaseController
@@ -64,8 +65,8 @@ class CartController extends BaseController
         }
 
         $user = $this->authService->getCurrentUser();
-        $productId = (int) ($_POST['productId'] ?? 0);
-        $amount = (int) ($_POST['amount'] ?? 0);
+        $productId = (int)($_POST['productId'] ?? 0);
+        $amount = (int)($_POST['amount'] ?? 0);
 
         if ($productId > 0 && $amount > 0) {
             $this->user_productsModel->getUpdateProduct($user->getId(), $productId, $amount);
@@ -75,7 +76,7 @@ class CartController extends BaseController
         exit();
     }
 
-    public function removeFromCart()
+    public function removeFromCart(int $productId)
     {
         if ($this->authService->check()) {
             header('Location: /login');
@@ -83,7 +84,6 @@ class CartController extends BaseController
         }
 
         $user = $this->authService->getCurrentUser();
-        $productId = (int) ($_POST['productId'] ?? 0);
 
         if ($productId > 0) {
             $this->user_productsModel->deleteByProductId($user->getId(), $productId);
@@ -104,50 +104,42 @@ class CartController extends BaseController
         exit();
     }
 
-    public function addProduct()
+    public function addProduct(AddProductRequest $request)
     {
-        $user = $this->authService->getCurrentUser();
-        if (!$user) {
-            header('Location: /login');
-            exit;
-        }
-
-        $productId = ($_POST['product_id']);
-        $amount = ($_POST['amount']);
-
-        if ($productId <= 0 || $amount <= 0) {
+        if ($this->authService->check()) {
+            $user = $this->authService->getCurrentUser();
+            $errors = $request->validate();
+            if (empty($errors)) {
+                $dto = new CartCreateDTO($user->getId(), $request->getProductId(), $request->getAmount());
+                $this->cartService->addProduct($dto);
+            }
+            header('Location: /catalog');
+        } else{
             header('Location: /catalog');
             exit;
         }
-
-        $dto = new CartCreateDTO($user->getId(), $productId, $amount);
-        $this->cartService->addProduct($dto);
-
-        header('Location: /catalog');
-        exit;
     }
 
-    public function decreaseProductFromCart()
+    public function decreaseProductFromCart(AddProductRequest $request)
     {
+        if (!$this->authService->check()) {
+            header('Location: /catalog');
+            exit;
+        }
         $user = $this->authService->getCurrentUser();
-        if (!$user) {
-            header('Location: /login');
+        $errors = $request->validate();
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            header('Location: /cart');
             exit;
         }
 
-        if (!isset($_POST['product_id'])) {
-            header('Location: /catalog');
-            exit;
-        }
+        $dto = new CartCreateDTO(
+            $user->getId(),
+            $request->getProductId(),
+            $request->getAmount()
+        );
 
-        $productId = (int)$_POST['product_id'];
-        $amount = isset($_POST['amount']) ? (int)$_POST['amount'] : 1;
-
-        if ($productId <= 0 || $amount <= 0) {
-            header('Location: /catalog');
-            exit;
-        }
-        $dto = new CartCreateDTO($user->getId(), $productId, $amount);
 
         $this->cartService->decreaseProductFromCart($dto);
 

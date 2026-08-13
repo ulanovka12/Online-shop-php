@@ -106,7 +106,7 @@ class User_products extends Model
         $stmt->execute(['userId' => $userId, 'productId' => $productId]);
     }
 
-    public function getUserProduct(int $productId, int $userId): ?self
+    public function getUserProduct(int $productId, int $userId): self|null
     {
         $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE product_id = :productId AND user_id = :userId");
         $stmt->execute(['productId' => $productId, 'userId' => $userId]);
@@ -121,6 +121,7 @@ class User_products extends Model
         $obj->user_id = $data['user_id'];
         $obj->product_id = $data['product_id'];
         $obj->amount = $data['amount'];
+
         return $obj;
     }
 

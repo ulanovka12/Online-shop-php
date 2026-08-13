@@ -7,6 +7,7 @@ use Controller\OrderController;
 use Controller\ProductController;
 use Controller\ReviewsController;
 use Controller\UserController;
+use Request\AddProductRequest;
 
 class App
 {
@@ -142,13 +143,18 @@ class App
 
                $handler = $routeMethods[$requestMethod];
 
-               $class = $handler['class']; //UserController
+               $class = $handler['class'];
                $method = $handler['method'];
-
-//               require_once "../Controllers/$class.php";
-
                $controller = new $class();
-               $controller->$method();
+
+               if (isset($handler['request']) && $handler['request'] !== null) {
+                   $requestClass = $handler['request'];
+                   $request = new $requestClass($_POST);
+                   $controller->$method($request);
+               } else {
+                   // Если класс запроса не указан – вызываем метод без аргументов
+                   $controller->$method();
+               }
 
            } else {
                echo "$requestMethod не поддерживается для $requestUri";
@@ -159,19 +165,21 @@ class App
        }
     }
 
-    public function get(string $route, string $className, string $method)
+    public function get(string $route, string $className, string $method, string $requestClass = null)
     {
         $this->routes[$route]['GET'] = [
             'class' => $className,
             'method' => $method,
+            'requestClass' => $requestClass,
         ];
     }
 
-    public function post(string $route, string $className, string $method)
+    public function post(string $route, string $className, string $method, string $requestClass = null)
     {
         $this->routes[$route]['POST'] = [
             'class' => $className,
             'method' => $method,
+            'request' => $requestClass,
         ];
     }
 

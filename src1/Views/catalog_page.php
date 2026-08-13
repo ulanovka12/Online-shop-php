@@ -1,7 +1,7 @@
 <body>
 
 <div class="container">
-    <!-- page header -->
+
     <div class="page-header">
         <h3>🛍️ Catalog</h3>
         <span class="subtitle">✨ new arrivals</span>
@@ -41,6 +41,7 @@
                         <!-- add -->
                         <form action="/add-product" method="POST">
                             <input type="hidden" name="product_id" value="<?= $productId; ?>">
+                            <input type="hidden" name="amount" value="1">
                             <button type="submit" class="btn-qty add" aria-label="Add one">＋</button>
                         </form>
 
@@ -51,6 +52,7 @@
 
                         <form action="/decrease-product" method="POST">
                             <input type="hidden" name="product_id" value="<?= $productId; ?>">
+                            <input type="hidden" name="amount" value="1">
                             <button type="submit" class="btn-qty remove" aria-label="Remove one">−</button>
                         </form>
                     </div>
