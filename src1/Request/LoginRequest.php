@@ -7,9 +7,7 @@ class LoginRequest
 {
 
     public function __construct(private array $data)
-    {
-
-    }
+    {}
     public function getEmail(): string
     {
         return $this->data['email'];

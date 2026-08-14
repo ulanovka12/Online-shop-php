@@ -9,7 +9,7 @@
             <a href="/profile">Профиль</a>
         </div>
         <div class="card-footer">
-            <a href="/profile-change">Изменить профиль</a>
+            <a href="/cart">Добавить в корзину</a>
         </div>
         <div class="card-footer">
             <a href="/users-orders">Мои заказы</a>

@@ -3,11 +3,11 @@
 namespace Controller;
 
 use DTO\CartCreateDTO;
-use DTO\OrderCreateDTO;
 use Model\Product;
 use Model\User_products;
 use Request\AddProductRequest;
 use Service\CartService;
+use Request\CartRequest;
 
 class CartController extends BaseController
 {
@@ -25,6 +25,7 @@ class CartController extends BaseController
 
     }
 
+    //Тут request не нужен из-за отсутствия валидации
     public function cart()
     {
         if (!$this->authService->check()) {
@@ -57,20 +58,19 @@ class CartController extends BaseController
         return $products;
     }
 
-    public function updateCart()
+    public function updateCart(CartRequest $request)
     {
         if ($this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $user = $this->authService->getCurrentUser();
-        $productId = (int)($_POST['productId'] ?? 0);
-        $amount = (int)($_POST['amount'] ?? 0);
+        $request->CartValidate();
 
-        if ($productId > 0 && $amount > 0) {
-            $this->user_productsModel->getUpdateProduct($user->getId(), $productId, $amount);
-        }
+        $user = $this->authService->getCurrentUser();
+
+        $this->user_productsModel->getUpdateProduct($user->getId(), $request->getProductId(), $request->getAmount());
+
 
         header('Location: /cart');
         exit();
@@ -94,12 +94,14 @@ class CartController extends BaseController
 
     public function clearCart()
     {
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
+
         $user = $this->authService->getCurrentUser();
-        $this->user_productsModel->deleteByUserId($user);
+        $this->user_productsModel->deleteByUserId($user->getId());
+
         header('Location: /cart');
         exit();
     }
