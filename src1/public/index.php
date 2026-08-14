@@ -18,7 +18,7 @@ $app->get('/login',  \Controller\UserController::class, 'getLogin');
 $app->post('/login',  UserController::class, 'login', \Request\LoginRequest::class);
 $app->get('/logout',  \Controller\UserController::class, 'logout');
 
-$app->get('/reviews', \Controller\ReviewsController::class, 'getReviews');
+$app->get('/reviews', \Controller\ReviewsController::class, 'getReviews' );
 $app->post('/reviews', \Controller\ReviewsController::class, 'Reviews', \Request\ReviewsRequest::class);
 
 

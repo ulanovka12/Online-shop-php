@@ -4,11 +4,13 @@ namespace Controller;
 
 use Model\Product;
 use Model\Reviews;
+use Request\ReviewsRequest;
 
 class ReviewsController extends BaseController
 {
     private Product $productModel;
     private Reviews $ReviewsModel;
+
 
     public function __construct()
     {
@@ -24,7 +26,7 @@ class ReviewsController extends BaseController
             exit;
         }
 
-        $productId = (int) ($_GET['product_id'] ?? 0);
+        $productId = $request->getProductId();
         if ($productId <= 0) {
             http_response_code(404);
             echo 'Товар не указан';
@@ -45,30 +47,21 @@ class ReviewsController extends BaseController
         require_once '../Views/reviews.php';
     }
 
-    // добавление нового отзыва
-    public function Reviews()
+    public function Reviews(ReviewsRequest $request)
     {
-        // Разрешаем только POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo 'Method Not Allowed';
-            exit;
-        }
-
-        // Проверка авторизации
         if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $productId = (int) ($_GET['product_id'] ?? 0);
-        if ($productId <= 0) {
+        $productId = $request->validate();
+        if ($productId === null) {
             http_response_code(400);
             echo 'Неверный ID товара';
             exit;
         }
 
-        // Проверяем, существует ли товар
+        // 3. Проверка существования товара
         $product = $this->productModel->validateProductData($productId);
         if ($product === null) {
             http_response_code(404);
@@ -76,29 +69,23 @@ class ReviewsController extends BaseController
             exit;
         }
 
-        // Обрабатываем добавление
-        $this->handleAddReview($productId);
+        $description = $request->validateDescription();
+        if ($description === null) {
+            // Сохраняем ошибку в сессию и редиректим обратно
+            $_SESSION['review_error'] = 'Отзыв должен содержать минимум 3 символа';
+            header('Location: /reviews?product_id=' . $productId);
+            exit;
+        }
 
-        // После успешного добавления – редирект на страницу отзывов (чтобы избежать повторной отправки)
-        header('Location: /reviews?product_id=' . $productId);
-        exit;
-    }
-
-    // --- Вспомогательный метод для добавления ---
-    private function handleAddReview(int $productId)
-    {
+        // 5. Получаем текущего пользователя
         $user = $this->authService->getCurrentUser();
         if (!$user) {
             $_SESSION['review_error'] = 'Вы не авторизованы';
-            return;
+            header('Location: /reviews?product_id=' . $productId);
+            exit;
         }
 
-        $description = trim($_POST['description'] ?? '');
-        if (mb_strlen($description) < 3) {
-            $_SESSION['review_error'] = 'Отзыв должен содержать минимум 3 символа';
-            return;
-        }
-
+        // 6. Сохраняем отзыв
         $success = $this->ReviewsModel->create(
             $productId,
             $user->getId(),
@@ -111,5 +98,8 @@ class ReviewsController extends BaseController
         } else {
             $_SESSION['review_error'] = 'Не удалось сохранить отзыв';
         }
+
+        header('Location: /reviews?product_id=' . $productId);
+        exit;
     }
 }

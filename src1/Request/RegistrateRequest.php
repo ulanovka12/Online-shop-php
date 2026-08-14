@@ -70,7 +70,7 @@ class RegistrateRequest
         return $errors;
     }
 
-    public function validateName(): null|string
+    private function validateName(): null|string
     {
         if (isset($this->data['name'])) {
             $name = $this->data['name'];

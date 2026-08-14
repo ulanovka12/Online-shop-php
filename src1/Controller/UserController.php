@@ -4,6 +4,7 @@ namespace Controller;
 
 use Model\User;
 use Request\LoginRequest;
+use Request\ProfileRequest;
 use Request\RegistrateRequest;
 
 class UserController extends BaseController
@@ -15,6 +16,7 @@ class UserController extends BaseController
         parent::__construct();
         $this->userModel = new User();
     }
+
 
     public function getRegistrate()
     {
@@ -110,7 +112,7 @@ class UserController extends BaseController
         }
     }
 
-    public function updateProfile()
+    public function updateProfile(ProfileRequest $request)
     {
         if (!$this->authService->check()) {
             header('Location: /login');
@@ -124,9 +126,9 @@ class UserController extends BaseController
         // Загружаем текущие данные из БД для сравнения
         $currentUser = $this->userModel->getByIdProfile($userId);
 
-        $newName = trim($_POST['name'] ?? '');
-        $newEmail = trim($_POST['email'] ?? '');
-        $newPassword = $_POST['password'] ?? '';
+        $newName = $request->getName();
+        $newEmail = $request->getEmail();
+        $newPassword = $request->getPassword();
 
         // ---- Проверка на изменения ----
         $hasChanges = false;
@@ -147,7 +149,7 @@ class UserController extends BaseController
         }
 
         // ---- Валидация
-        $errors = $this->validateProfileUpdate($_POST, $userId);
+        $errors = $request->validateProfileUpdate();
 
         if (empty($errors)) {
             // Если пароль не пуст – хешируем, иначе оставляем NULL (не меняем)
@@ -162,7 +164,7 @@ class UserController extends BaseController
         }
 
         // Если есть ошибки – сохраняем их и введённые данные в сессию,
-        // Отображение формы
+        // Отображение формы (????????????)
         $_SESSION['form_errors'] = $errors;
         $_SESSION['old_input'] = ['name' => $newName, 'email' => $newEmail];
 

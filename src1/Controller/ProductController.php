@@ -4,6 +4,7 @@ namespace Controller;
 
 use Model\Product;
 use Model\User_products;
+use Request\ProductRequest;
 
 class ProductController extends BaseController
 {
@@ -27,65 +28,40 @@ class ProductController extends BaseController
         require_once '../Views/add_product_form.php';
     }
 
-    public function product()
+    public function product(ProductRequest $request)
     {
-        // Проверяем, что это POST-запрос и передан product_id
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
-            header("Location: /catalog");
-            exit();
-        }
+//        // Проверяем, что это POST-запрос и передан product_id
+//        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
+//            header("Location: /catalog");
+//            exit();
+//        }
 
-        $user = $this->authService->getCurrentUser();  // если нет сессии – используем гостя (1)
+        $user = $this->authService->getCurrentUser();
 //        var_dump($user);
         if (!$user) {
             header('Location: /login');
             exit;
         }
-        $productId = (int)$_POST['product_id'];
         $amount = 1; // всегда добавляем одну единицу
+
+        $request->validateProduct();
 
         // Проверяем, есть ли уже этот товар у пользователя
 
-        $existing = $this->user_productsModel->getUserProduct($productId, $user->getId());
+        $existing = $this->user_productsModel->getUserProduct($request->getProductId(), $user->getId());
 
 
         if ($existing === null) {
             // Если нет – вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($user->getId(), $productId, $amount);
+            $this->user_productsModel->insertUserProduct($user->getId(), $request->getProductId(), $request->getAmount());
         } else {
             // Если есть – увеличиваем количество на 1
             $newAmount = $existing->getAmount() + 1;
-            $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $productId);
+            $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $request->getProductId());
         }
 
         header("Location: /catalog");
         exit();
-    }
-
-    private function validateProduct($data)
-    {
-        $errors = [];
-
-        if (isset($data['product_id'])) {
-
-            $productId = (int)$data['product_id'];
-
-            $productData = $this->productModel->ValidateProductData($productId);
-
-
-            if ($productData === false) {
-                $errors['product_id'] = 'Продукт не найден';
-            }
-            if (isset($data['amount'])) {
-                $amount = (int)$data['amount'];
-                if ($amount <= 0) {
-                    $errors['amount'] = 'Количество товара должно быть больше 0.';
-                }
-            }
-        } else {
-            $errors['product_id'] = 'id продукта должен быть указан';
-        }
-        return $errors;
     }
 
     public function catalog()
