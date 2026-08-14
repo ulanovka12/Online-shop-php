@@ -17,6 +17,7 @@ class CartService
 
     public function addProduct(CartCreateDTO $data): int
     {
+        $newAmount = $data->getAmount();
         // Проверяем, есть ли уже запись
         $existing = $this->user_productsModel->getUserProduct($data->getProductId(), $data->getUserId());
 
@@ -35,6 +36,7 @@ class CartService
     // Уменьшить на 1 (или удалить, если станет 0)
     public function decreaseProductFromCart(CartCreateDTO $data): int
     {
+        $newAmount = $data->getAmount();
         // Получаем текущую запись
         $existing = $this->user_productsModel->getUserProduct($data->getProductId(), $data->getUserId());
 

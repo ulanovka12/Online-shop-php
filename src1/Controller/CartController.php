@@ -142,7 +142,6 @@ class CartController extends BaseController
             $request->getAmount()
         );
 
-
         $this->cartService->decreaseProductFromCart($dto);
 
         header('Location: /catalog');

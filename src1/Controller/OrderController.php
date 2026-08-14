@@ -6,6 +6,7 @@ use DTO\OrderCreateDTO;
 use Model\Order;
 use Model\Product;
 use Model\Order_products;
+use Request\OrderRequest;
 use Service\OrderService;
 
 class OrderController extends BaseController
@@ -30,14 +31,15 @@ class OrderController extends BaseController
         require_once './../Views/order_form.php';
     }
 
-    public function handleCheckout(array $data)
+    public function handleCheckout(OrderRequest $request)
     {
         if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
 
-        $errors = $this->validate($_POST);
+
+        $errors = $request->validate();
 
         if (!empty($errors)) {
             require_once './../Views/order_form.php';
@@ -54,10 +56,10 @@ class OrderController extends BaseController
 
             $dto = new OrderCreateDTO
             (
-                $data['contact_name'],
-                $data['contact_phone'],
-                $data['comment'],
-                $data['address'],
+                $request->getContactName(),
+                $request->getContactPhone(),
+                $request->getComment(),
+                $request->getAddress(),
                 $user
             );
 
@@ -69,63 +71,6 @@ class OrderController extends BaseController
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             require_once './../Views/order_form.php';
-        }
-    }
-
-
-    private function validate(array $data): array
-    {
-        $errors = [];
-
-        $contactName = $this->validateName($data);
-        if (!empty($contactName)) {
-            $errors['contact_name'] = $contactName;
-        }
-
-
-        if (isset($data['contact_phone'])) {
-            $contactPhone = $data['contact_phone'];
-
-            if (!ctype_digit($contactPhone)) {
-                $errors['contact_phone'] = 'Телефон должен содержать только цифры';
-            } elseif (strlen($contactPhone) < 10) {
-                $errors['contact_phone'] = 'Телефон должен содержать минимум 10 цифр';
-            } elseif (strlen($contactPhone) > 15) {
-                $errors['contact_phone'] = 'Телефон не может содержать больше 15 цифр';
-            }
-        } else {
-            $errors['contact_phone'] = 'Телефон должен быть заполнен!';
-        }
-        // Валидация комментария
-        if (isset($data['comment']) && !empty($data['comment'])) {
-            $comment = $data['comment'];
-            if (strlen($comment) > 500) {
-                $errors['comment'] = 'Комментарий не может быть длиннее 500 символов';
-            }
-        }
-
-        if (isset($data['address'])) {
-            $address = $data['address'];
-            if (strlen($address) < 5) {
-                $errors['address'] = 'Адрес не может содержать меньше 5 символов';
-            }
-        } else {
-            $errors['address'] = 'Адрес должен быть заполнен!';
-        }
-
-        return $errors;
-    }
-
-    private function validateName(array $data): null|string
-    {
-        if (isset($data['contact_name'])) {
-            $contact_name = $data['contact_name'];
-            if (strlen($contact_name) < 3) {
-                return 'Имя не может содержать меньше 3 символов';
-            }
-            return null;
-        } else {
-            return 'Имя должно быть заполнено';
         }
     }
 
