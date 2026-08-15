@@ -72,6 +72,7 @@ unset($_SESSION['review_success'], $_SESSION['review_error']);
 <?php if ($currentUser): ?>
     <div class="container review-form">
         <form method="POST" action="/reviews?product_id=<?= $productId ?>">
+            <input type="hidden" name="product_id" value="<?= $productId ?>">
             <input type="hidden" name="add_review" value="1">
             <div class="form-group">
                 <label for="name">Ваше имя</label>

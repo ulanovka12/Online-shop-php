@@ -26,7 +26,7 @@ class ReviewsController extends BaseController
             exit;
         }
 
-        $productId = $request->getProductId();
+        $productId = (int)($_GET['product_id'] ?? 0);
         if ($productId <= 0) {
             http_response_code(404);
             echo 'Товар не указан';
@@ -34,13 +34,12 @@ class ReviewsController extends BaseController
         }
 
         $product = $this->productModel->validateProductData($productId);
-        if ($product === null) {
+        if (!$product) {  // если null, false или 0
             http_response_code(404);
             echo 'Товар не найден';
             exit;
         }
 
-        // Получаем отзывы
         $reviews = $this->ReviewsModel->getByProductId($productId);
         $currentUser = $this->authService->getCurrentUser();
 
@@ -71,13 +70,10 @@ class ReviewsController extends BaseController
 
         $description = $request->validateDescription();
         if ($description === null) {
-            // Сохраняем ошибку в сессию и редиректим обратно
             $_SESSION['review_error'] = 'Отзыв должен содержать минимум 3 символа';
             header('Location: /reviews?product_id=' . $productId);
             exit;
         }
-
-        // 5. Получаем текущего пользователя
         $user = $this->authService->getCurrentUser();
         if (!$user) {
             $_SESSION['review_error'] = 'Вы не авторизованы';
@@ -85,7 +81,6 @@ class ReviewsController extends BaseController
             exit;
         }
 
-        // 6. Сохраняем отзыв
         $success = $this->ReviewsModel->create(
             $productId,
             $user->getId(),

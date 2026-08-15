@@ -18,7 +18,7 @@ $app->get('/login',  \Controller\UserController::class, 'getLogin');
 $app->post('/login',  UserController::class, 'login', \Request\LoginRequest::class);
 $app->get('/logout',  \Controller\UserController::class, 'logout');
 
-$app->get('/reviews', \Controller\ReviewsController::class, 'getReviews' );
+$app->get('/reviews', \Controller\ReviewsController::class, 'getReviews', \Request\ReviewsRequest::class);
 $app->post('/reviews', \Controller\ReviewsController::class, 'Reviews', \Request\ReviewsRequest::class);
 
 
@@ -35,6 +35,7 @@ $app->get('/clear-cart', \Controller\CartController::class, 'clearCart' );
 
 $app->post('/add-product', \Controller\CartController::class, 'addProductToCart', \Request\AddProductRequest::class );
 $app->post('/decrease-product', \Controller\CartController::class, 'decreaseProductFromCart', \Request\AddProductRequest::class );
+
 $app->get('/profile-change', \Controller\UserController::class, 'editProfile');
 $app->post('/profile-change', \Controller\UserController::class, 'updateProfile', \Request\ProfileRequest::class );
 $app->get('/add-product', \Controller\ProductController::class, 'getProducts');

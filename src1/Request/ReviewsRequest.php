@@ -2,9 +2,6 @@
 
 namespace Request;
 
-use Service\AuthService;
-use Model\Reviews;
-
 class ReviewsRequest
 {
     public function __construct(private array $data)
