@@ -45,6 +45,7 @@ class AuthService
 
                 $_SESSION['userId'] = $user->getId();
                 return true;
+
             } else {
                 return false;
             }

@@ -37,8 +37,6 @@ class OrderController extends BaseController
             header("Location: /login");
             exit();
         }
-
-
         $errors = $request->validate();
 
         if (!empty($errors)) {
@@ -63,7 +61,6 @@ class OrderController extends BaseController
                 $user
             );
 
-            // Передаём и DTO,и пользователя
             $orderId = $this->orderService->createOrder($dto);
 
             header('Location: /users-orders');

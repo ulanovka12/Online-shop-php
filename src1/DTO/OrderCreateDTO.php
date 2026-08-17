@@ -12,7 +12,6 @@ class OrderCreateDTO
         private readonly string $contactPhone,
         private readonly string $comment,
         private readonly string $address,
-        private readonly User $user
     ){
 
     }

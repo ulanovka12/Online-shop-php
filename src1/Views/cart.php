@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="fw-semibold">$<?php echo number_format($item->getPrice(), 2); ?></td>
+                            <td class="fw-semibold">Р<?php echo number_format($item->getPrice(), 2); ?></td>
                             <td>
                                 <form action="/add-product" method="POST" class="d-flex align-items-center gap-2">
                                     <input type="hidden" name="product_id" value="<?php echo $item->getId(); ?>">
@@ -79,7 +79,7 @@
                                     </button>
                                 </form>
                             </td>
-                            <td class="fw-bold text-success">$<?php echo number_format($item->getPrice() * $item->getAmount(), 2); ?></td>
+                            <td class="fw-bold text-success">Р<?php echo number_format($item->getPrice() * $item->getAmount(), 2); ?></td>
                             <td>
                                 <a href="/remove-from-cart?product_id=<?php echo $item->getId(); ?>"
                                    class="btn btn-outline-danger btn-sm rounded-circle"
@@ -95,7 +95,7 @@
                 <tfoot>
                 <tr class="table-active fw-bold">
                     <td colspan="3" class="text-end fs-5">Итого:</td>
-                    <td colspan="2" class="fs-4 text-success">$<?php echo number_format($cart_total, 2); ?></td>
+                    <td colspan="2" class="fs-4 text-success">Р<?php echo number_format($cart_total, 2); ?></td>
                 </tr>
                 </tfoot>
             </table>
