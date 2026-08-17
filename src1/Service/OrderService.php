@@ -2,11 +2,12 @@
 
 namespace Service;
 
+use DTO\OrderCreateDTO;
 use Model\Order;
 use Model\order_products;
 use Model\User_products;
-
-use DTO\OrderCreateDTO;
+use Service\Auth\AuthInterface;
+use Service\Auth\AuthSessionService;
 
 class OrderService
 {
@@ -14,14 +15,14 @@ class OrderService
     private user_products $user_productsModel;
     private order_products $order_productsModel;
 
-    private AuthService $AuthService;
+    private AuthInterface $AuthService;
 
     public function __construct()
     {
         $this->OrderModel = new Order();
         $this->user_productsModel = new user_products();
         $this->order_productsModel = new order_products();
-        $this->AuthService = new AuthService();
+        $this->AuthService = new AuthSessionService();
     }
 
     public function createOrder(OrderCreateDTO $data):int
