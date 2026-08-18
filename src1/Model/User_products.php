@@ -109,6 +109,7 @@ class User_products extends Model
     public function getUserProduct(int $productId, int $userId): self|null
     {
         $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE product_id = :productId AND user_id = :userId");
+
         $stmt->execute(['productId' => $productId, 'userId' => $userId]);
         $data = $stmt->fetch();
 

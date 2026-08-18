@@ -24,8 +24,6 @@ class CartController extends BaseController
         $this->cartService = new CartService();
 
     }
-
-    //Тут request не нужен из-за отсутствия валидации
     public function cart()
     {
         if (!$this->authService->check()) {

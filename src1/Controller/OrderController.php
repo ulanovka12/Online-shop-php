@@ -7,6 +7,7 @@ use Model\Order;
 use Model\Product;
 use Model\Order_products;
 use Request\OrderRequest;
+use Service\CartService;
 use Service\OrderService;
 
 class OrderController extends BaseController
@@ -15,6 +16,7 @@ class OrderController extends BaseController
     private Order_products $order_productsModel;
     private Product $product;
     private OrderService $orderService;
+    private CartService $cartService;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class OrderController extends BaseController
         $this->order_productsModel = new Order_products();
         $this->product = new Product();
         $this->orderService = new OrderService();
+        $this->cartService = new CartService();
     }
 
 
@@ -37,6 +40,13 @@ class OrderController extends BaseController
             header("Location: /login");
             exit();
         }
+
+        $sum = $this->cartService->getSum();
+
+        if ($sum < 1000){
+            throw new \Exception("Для оформления заказа сумма корзины должна быть больше 1000");
+        }
+
         $errors = $request->validate();
 
         if (!empty($errors)) {
@@ -58,7 +68,6 @@ class OrderController extends BaseController
                 $request->getContactPhone(),
                 $request->getComment(),
                 $request->getAddress(),
-                $user
             );
 
             $orderId = $this->orderService->createOrder($dto);

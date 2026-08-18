@@ -147,13 +147,23 @@ class App
                $method = $handler['method'];
                $controller = new $class();
 
-               if (isset($handler['request']) && $handler['request'] !== null) {
-                   $requestClass = $handler['request'];
-                   $request = new $requestClass($_POST);
-                   $controller->$method($request);
-               } else {
-                   // Если класс запроса не указан – вызываем метод без аргументов
-                   $controller->$method();
+               try{
+                   if (isset($handler['request']) && $handler['request'] !== null) {
+                       $requestClass = $handler['request'];
+                       $request = new $requestClass($_POST);
+                       $controller->$method($request);
+                   } else {
+                       // Если класс запроса не указан – вызываем метод без аргументов
+                       $controller->$method();
+                   }
+               }catch(\Throwable $exception){
+
+                   $exception->getMessage();
+                   $exception->getFile();
+                   $exception->getLine();
+
+                   http_response_code(500);
+                   require_once '../Views/500.php';
                }
 
            } else {

@@ -1,19 +1,3 @@
-<?php
-/**
- * @var Product $product
- * @var array<Reviews> $reviews
- * @var User|null $currentUser
- */
-$productName = htmlspecialchars($product->getName());
-$productId = $product->getId();
-
-// Сообщения из сессии
-$success = $_SESSION['review_success'] ?? null;
-$error = $_SESSION['review_error'] ?? null;
-unset($_SESSION['review_success'], $_SESSION['review_error']);
-?>
-
-
 <div class="container">
     <div class="row">
         <div class="col-md-12">

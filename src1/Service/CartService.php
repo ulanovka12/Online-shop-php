@@ -2,6 +2,9 @@
 
 namespace Service;
 
+use Model\Order;
+use Model\Order_products;
+use Model\Product;
 use Model\User_products;
 
 use DTO\CartCreateDTO;
@@ -13,11 +16,13 @@ class CartService
 {
     private User_products $user_productsModel;
     private AuthInterface $AuthService;
+    private Product $productModel;
 
     public function __construct()
     {
         $this->user_productsModel = new User_products();
         $this->AuthService = new AuthSessionService();
+        $this->productModel = new Product();
     }
 
 
@@ -55,5 +60,19 @@ class CartService
             }
         }
         return $newAmount;
+    }
+
+    public function getSum():int
+    {
+        $user = $this->AuthService->getCurrentUser();
+
+        $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
+
+        $total = 0;
+        foreach ($userProducts as $userProduct) {
+            $product = $this->productModel->getOneById($userProduct->getProductId());
+            $total += $product->getPrice() * $userProduct->getAmount();
+        }
+        return $total;
     }
 }

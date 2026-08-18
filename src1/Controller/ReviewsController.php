@@ -34,7 +34,7 @@ class ReviewsController extends BaseController
         }
 
         $product = $this->productModel->validateProductData($productId);
-        if (!$product) {  // если null, false или 0
+        if (!$product) {
             http_response_code(404);
             echo 'Товар не найден';
             exit;
@@ -63,7 +63,6 @@ class ReviewsController extends BaseController
         // 3. Проверка существования товара
         $product = $this->productModel->validateProductData($productId);
         if ($product === null) {
-            http_response_code(404);
             echo 'Товар не найден';
             exit;
         }

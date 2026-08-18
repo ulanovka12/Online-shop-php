@@ -1,0 +1,14 @@
+Message: Сумма заказа должна быть больше 1000
+File: OrderService
+Line: 30
+data: 18.08.2026
+
+Message: Сумма заказа должна быть больше 1000
+File: OrderController
+Line: 47
+data: 18.08.2026
+
+Message: Сумма заказа должна быть больше 1000
+File:
+Line:
+data:

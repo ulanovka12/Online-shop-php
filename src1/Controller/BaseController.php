@@ -12,6 +12,6 @@ class BaseController
 
     public function __construct()
     {
-        $this->authService = new AuthCookieService();
+        $this->authService = new AuthSessionService();
     }
 }
