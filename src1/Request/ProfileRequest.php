@@ -28,7 +28,7 @@ class ProfileRequest
         return $this->data['password'];
     }
 
-    public function validateProfileUpdate(): array
+    public function validateProfileUpdate(int $currentUserId = 0): array
     {
         $errors = [];
 
@@ -44,7 +44,7 @@ class ProfileRequest
                 $errors['email'] = 'Неправильный email';
             } else {
                 $user = $this->userModel->getByEmail($email);
-                if ($user !== null && $user->getId()) {
+                if ($user !== null && $user->getId() !== $currentUserId) {
                     $errors['email'] = 'Этот Email уже существует';
                 }
             }

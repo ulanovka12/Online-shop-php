@@ -21,7 +21,7 @@ class ProductController extends BaseController
 
     public function getProducts()
     {
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
@@ -30,33 +30,33 @@ class ProductController extends BaseController
 
     public function product(ProductRequest $request)
     {
-//        // Проверяем, что это POST-запрос и передан product_id
-//        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
-//            header("Location: /catalog");
-//            exit();
-//        }
 
         $user = $this->authService->getCurrentUser();
-//        var_dump($user);
+
         if (!$user) {
             header('Location: /login');
             exit;
         }
-        $amount = 1; // всегда добавляем одну единицу
 
-        $request->validateProduct();
+       $errors = $request->validateProduct();
+
+        if (!empty($errors)) {
+            header("Location: /catalog");
+            exit();
+        }
+
+        $amount = $request->getAmount();
 
         // Проверяем, есть ли уже этот товар у пользователя
-
         $existing = $this->user_productsModel->getUserProduct($request->getProductId(), $user->getId());
 
 
         if ($existing === null) {
             // Если нет – вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($user->getId(), $request->getProductId(), $request->getAmount());
+            $this->user_productsModel->insertUserProduct($user->getId(), $request->getProductId(), $amount);
         } else {
             // Если есть – увеличиваем количество на 1
-            $newAmount = $existing->getAmount() + 1;
+            $newAmount = $existing->getAmount() + $amount;
             $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $request->getProductId());
         }
 
@@ -67,18 +67,16 @@ class ProductController extends BaseController
     public function catalog()
     {
 
-        $user = $this->authService->getCurrentUser() ?? 1; // если нет сессии – гость
+        $user = $this->authService->getCurrentUser(); // если нет сессии – гость
 
         // Получаем все товары
+
         $products = $this->productModel->getAll();
 
-        if (!$user) {
-            $this->authService->check();
-            header("Location: /login");
-            exit(); // редирект на логин
+        if ($user) {
+            $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
         } else {
-            $userId = is_object($user) ? $user->getId() : (int)$user;
-            $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+            $userProducts = [];
         }
 
         // Превращаем корзину в массив [product_id => amount]

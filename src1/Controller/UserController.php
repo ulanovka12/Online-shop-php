@@ -43,7 +43,7 @@ class UserController extends BaseController
             if ($userId) {
                 // Автоматический вход после регистрации (опционально)
                 $this->authService->auth($request->getEmail(), $request->getPassword());
-                header('Location: /login');
+                header('Location: /catalog');
                 exit();
             } else {
                 $errors['auth'] = 'Неверный email или пароль';
@@ -149,7 +149,7 @@ class UserController extends BaseController
         }
 
         // ---- Валидация
-        $errors = $request->validateProfileUpdate();
+        $errors = $request->validateProfileUpdate($userId);
 
         if (empty($errors)) {
             // Если пароль не пуст – хешируем, иначе оставляем NULL (не меняем)
@@ -169,7 +169,7 @@ class UserController extends BaseController
         $_SESSION['old_input'] = ['name' => $newName, 'email' => $newEmail];
 
         // Возвращаемся на страницу редактирования
-        header('Location: /profile/edit');
+        header('Location: /profile-change');
         exit();
     }
 

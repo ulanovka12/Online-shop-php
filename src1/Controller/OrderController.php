@@ -44,7 +44,9 @@ class OrderController extends BaseController
         $sum = $this->cartService->getSum();
 
         if ($sum < 1000){
-            throw new \Exception("Для оформления заказа сумма корзины должна быть больше 1000");
+            $errorMessage = "Для оформления заказа сумма корзины должна быть больше 1000";
+            require_once './../Views/order_form.php';
+            return;
         }
 
         $errors = $request->validate();

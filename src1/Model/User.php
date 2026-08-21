@@ -67,7 +67,9 @@ class User extends Model
     public function getByIdProfile(int $userId): self|null
     {
 
-        $stmt = $this->pdo->query("SELECT * FROM {$this->getTableName()} WHERE id = $userId");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+
         $user = $stmt->fetch();
 
         if ($user === false)
@@ -81,7 +83,7 @@ class User extends Model
         $obj->name = $user['name'];
         $obj->email = $user['email'];
         $obj->password = $user['password'];
-        $obj->image_url = $result['image_url'] ?? '';
+        $obj->image_url = $user['image_url'] ?? '';
 
         return $obj;
     }

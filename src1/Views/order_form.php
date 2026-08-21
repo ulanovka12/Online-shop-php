@@ -1,8 +1,12 @@
 <form method="POST" action="/create-order" enctype="multipart/form-data">
     <div class="container">
         <h1>Order</h1>
-        <hr>
 
+        <?php if (!empty($errorMessage)): ?>
+            <label style="color: #ff0000"><?php echo htmlspecialchars($errorMessage); ?></label>
+        <?php endif; ?>
+
+        <hr>
         <label for="name"><b>Name</b></label>
         <?php if (isset($errors['name'])): ?>
             <label style="color: #ff0000"><?php echo $errors['contact_name']; ?></label>

@@ -58,12 +58,17 @@ class CartController extends BaseController
 
     public function updateCart(CartRequest $request)
     {
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $request->CartValidate();
+        $errors = $request->CartValidate();
+
+        if (!empty($errors)) {
+            header('Location: /cart');
+            exit();
+        }
 
         $user = $this->authService->getCurrentUser();
 
@@ -74,14 +79,16 @@ class CartController extends BaseController
         exit();
     }
 
-    public function removeFromCart(int $productId)
+    public function removeFromCart()
     {
-        if ($this->authService->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
         $user = $this->authService->getCurrentUser();
+
+        $productId = (int)($_GET['product_id'] ?? 0);
 
         if ($productId > 0) {
             $this->user_productsModel->deleteByProductId($user->getId(), $productId);

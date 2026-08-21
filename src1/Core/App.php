@@ -8,6 +8,7 @@ use Controller\ProductController;
 use Controller\ReviewsController;
 use Controller\UserController;
 use Request\AddProductRequest;
+use Throwable;
 
 class App
 {
@@ -156,7 +157,7 @@ class App
                        // Если класс запроса не указан – вызываем метод без аргументов
                        $controller->$method();
                    }
-               }catch(\Throwable $exception){
+               }catch(Throwable $exception){
 
                    $exception->getMessage();
                    $exception->getFile();

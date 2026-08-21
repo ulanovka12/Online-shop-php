@@ -66,7 +66,7 @@
                             </td>
                             <td class="fw-semibold">Р<?php echo number_format($item->getPrice(), 2); ?></td>
                             <td>
-                                <form action="/add-product" method="POST" class="d-flex align-items-center gap-2">
+                                <form action="/update-cart" method="POST" class="d-flex align-items-center gap-2">
                                     <input type="hidden" name="product_id" value="<?php echo $item->getId(); ?>">
                                     <input type="number"
                                            name="amount"
@@ -115,133 +115,208 @@
 <style>
     body {
         padding-top: 80px;
-        background-color: #f4f6f9;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: #f5f7fb;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .container.mt-5 {
+        background: #ffffff;
+        border-radius: 32px;
+        padding: 32px 32px 24px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+        margin-top: 2rem !important;
     }
 
-    .navbar-brand {
+    .d-flex.align-items-center.justify-content-between.mb-4 h3 {
         font-weight: 600;
-        letter-spacing: 0.5px;
+        font-size: 1.6rem;
+        color: #1e293b;
+        letter-spacing: -0.01em;
     }
-
+    .d-flex.align-items-center.justify-content-between.mb-4 h3 i {
+        color: #3b82f6;
+    }
+    #cart-count {
+        background: #3b82f6 !important;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 40px;
+        box-shadow: none;
+    }
+    .alert-info {
+        background: #f8fafc;
+        border: 2px dashed #d1d9e6;
+        border-radius: 32px !important;
+        padding: 3rem 1.5rem;
+    }
+    .alert-info i {
+        color: #94a3b8 !important;
+    }
+    .alert-info h4 {
+        color: #334155;
+        font-weight: 500;
+    }
+    .alert-info .btn-outline-primary {
+        border-color: #3b82f6;
+        color: #3b82f6;
+        border-radius: 40px;
+        padding: 0.5rem 2rem;
+    }
+    .alert-info .btn-outline-primary:hover {
+        background: #3b82f6;
+        color: #fff;
+    }
     .cart-table {
-        background-color: #fff;
         border-radius: 20px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-        border-collapse: separate;
-        border-spacing: 0;
+        overflow: hidden;
+        box-shadow: none;
     }
-
     .cart-table thead th {
-        border-bottom: 2px solid #e9ecef;
+        background: #f1f5f9;
+        color: #475569;
         font-weight: 600;
-        color: #495057;
+        font-size: 0.75rem;
         text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        padding: 16px 12px;
+        letter-spacing: 0.04em;
+        padding: 14px 16px;
+        border-bottom: none;
     }
-
-    .cart-table tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-    .cart-table tbody tr:hover {
-        background-color: #f8faff;
-    }
-
     .cart-table tbody td {
+        padding: 16px 16px;
         vertical-align: middle;
-        padding: 16px 12px;
-        border-bottom: 1px solid #f1f3f5;
+        border-bottom: 1px solid #eef2f6;
+        background-color: #ffffff;
     }
-
     .cart-table tbody tr:last-child td {
         border-bottom: none;
     }
-
-    .product-icon {
-        transition: transform 0.2s ease;
+    .cart-table tbody tr:hover td {
+        background-color: #fafcff;
+        transition: background 0.15s ease;
     }
-    .product-icon:hover {
+    .product-icon {
+        width: 44px !important;
+        height: 44px !important;
+        background: #eff6ff !important;
+        border-radius: 12px !important;
+    }
+    .product-icon i {
+        color: #3b82f6 !important;
+        font-size: 1.1rem;
+    }
+    .d-block strong {
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .text-muted small {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+    .quantity-input {
+        width: 80px !important;
+        border-radius: 40px !important;
+        border: 1.5px solid #e2e8f0;
+        padding: 0.3rem 0.6rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        background: #fff;
+        text-align: center;
+        transition: border 0.15s;
+    }
+    .quantity-input:focus {
+        border-color: #3b82f6;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    .btn-outline-primary.btn-sm.rounded-circle {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 50% !important;
+        border: 1.5px solid #dbeafe;
+        color: #3b82f6;
+        background: #fff;
+        padding: 0 !important;
+        font-size: 0.8rem;
+        transition: all 0.15s ease;
+    }
+    .btn-outline-primary.btn-sm.rounded-circle:hover {
+        background: #3b82f6;
+        color: #fff;
+        border-color: #3b82f6;
         transform: scale(1.05);
     }
 
-    .quantity-input {
-        -moz-appearance: textfield;
-        appearance: textfield;
-        font-weight: 600;
-        font-size: 0.95rem;
-        border-radius: 30px;
-        border: 1px solid #ced4da;
-        padding: 0.375rem 0.75rem;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    .quantity-input::-webkit-outer-spin-button,
-    .quantity-input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    .quantity-input:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .btn-outline-primary.btn-sm.rounded-circle {
-        transition: all 0.2s ease;
-    }
-    .btn-outline-primary.btn-sm.rounded-circle:hover {
-        background-color: #0d6efd;
-        color: #fff;
-        border-color: #0d6efd;
-        transform: rotate(45deg);
-    }
-
     .btn-outline-danger.btn-sm.rounded-circle {
-        transition: all 0.2s ease;
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 50% !important;
+        border: 1.5px solid #fee2e2;
+        color: #ef4444;
+        background: #fff;
+        padding: 0 !important;
+        font-size: 0.8rem;
+        transition: all 0.15s ease;
     }
     .btn-outline-danger.btn-sm.rounded-circle:hover {
-        background-color: #dc3545;
+        background: #ef4444;
         color: #fff;
-        border-color: #dc3545;
-        transform: scale(1.1);
+        border-color: #ef4444;
+        transform: scale(1.05);
     }
 
-    .table-active {
-        background-color: #f8f9fa;
+    .fw-semibold {
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .text-success {
+        color: #16a34a !important;
+        font-weight: 600;
     }
     .table-active td {
-        padding: 18px 12px;
+        background: #f8fafc !important;
+        padding: 18px 16px !important;
+        border-top: 2px solid #e2e8f0;
+        font-weight: 600;
     }
-
-    .btn-success {
-        background: linear-gradient(145deg, #2b8c5e, #1e6b48);
+    .table-active td:last-child {
+        font-size: 1.5rem;
+        color: #16a34a;
+        font-weight: 700;
+    }
+    .btn-outline-danger.rounded-pill {
+        border: 1.5px solid #fca5a5;
+        color: #dc2626;
+        background: #fff;
+        border-radius: 40px !important;
+        padding: 0.5rem 1.8rem;
+        transition: all 0.15s ease;
+    }
+    .btn-outline-danger.rounded-pill:hover {
+        background: #dc2626;
+        color: #fff;
+        border-color: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    }
+    .btn-success.rounded-pill {
+        background: #16a34a !important;
         border: none;
-        transition: transform 0.15s ease, box-shadow 0.2s ease;
+        border-radius: 40px !important;
+        padding: 0.6rem 2.5rem;
+        font-weight: 600;
+        transition: all 0.15s ease;
     }
-    .btn-success:hover {
+    .btn-success.rounded-pill:hover {
+        background: #15803d !important;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.25);
-        background: linear-gradient(145deg, #2b8c5e, #1e6b48);
+        box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2);
     }
-
-    .btn-outline-danger {
-        transition: all 0.2s ease;
-    }
-    .btn-outline-danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-    }
-
-    .badge.bg-primary {
-        background: linear-gradient(135deg, #4e73df, #224abe) !important;
-        font-size: 0.9rem;
-        padding: 0.4rem 0.8rem;
-        border-radius: 30px;
-    }
-
-    /* адаптация для мобильных */
     @media (max-width: 768px) {
+        .container.mt-5 {
+            padding: 20px 16px;
+            border-radius: 24px;
+        }
         .cart-table thead {
             display: none;
         }
@@ -249,17 +324,17 @@
             display: block;
             margin-bottom: 1.2rem;
             border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
             background: #fff;
-            padding: 1rem;
-            border: 1px solid #eee;
+            padding: 0.8rem 0.8rem 0.4rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
         .cart-table tbody td {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px dashed #e9ecef;
+            border-bottom: 1px dashed #f1f5f9;
             flex-wrap: wrap;
         }
         .cart-table tbody td:last-child {
@@ -268,64 +343,57 @@
         .cart-table tbody td:before {
             content: attr(data-label);
             font-weight: 600;
-            color: #6c757d;
-            font-size: 0.8rem;
+            color: #64748b;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-right: 10px;
+            letter-spacing: 0.03em;
+            margin-right: 12px;
+            min-width: 70px;
         }
-        .cart-table tbody td:first-child:before {
-            content: "Товар";
-        }
-        .cart-table tbody td:nth-child(2):before {
-            content: "Цена";
-        }
-        .cart-table tbody td:nth-child(3):before {
-            content: "Количество";
-        }
-        .cart-table tbody td:nth-child(4):before {
-            content: "Сумма";
-        }
-        .cart-table tbody td:nth-child(5):before {
-            content: "Действия";
-        }
+        .cart-table tbody td:first-child:before { content: "Товар"; }
+        .cart-table tbody td:nth-child(2):before { content: "Цена"; }
+        .cart-table tbody td:nth-child(3):before { content: "Кол-во"; }
+        .cart-table tbody td:nth-child(4):before { content: "Сумма"; }
+        .cart-table tbody td:nth-child(5):before { content: "Действия"; }
         .cart-table tbody td .d-flex {
             flex: 1;
             justify-content: flex-end;
         }
         .product-icon {
-            width: 40px !important;
-            height: 40px !important;
+            width: 36px !important;
+            height: 36px !important;
         }
         .table-active td {
             display: flex;
             justify-content: space-between;
-        }
-        .table-active td:first-child {
-            font-weight: 600;
+            padding: 12px 0 !important;
+            border-top: 2px solid #e2e8f0;
         }
         .table-active td:last-child {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+        }
+        .d-flex.flex-wrap.justify-content-end {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+        .d-flex.flex-wrap.justify-content-end .btn {
+            width: 100%;
+            text-align: center;
+            padding: 0.6rem 1rem;
         }
     }
 
-    /* Анимация появления */
     .cart-table tbody tr {
-        animation: fadeInUp 0.4s ease both;
+        animation: fadeUp 0.35s ease both;
     }
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-    .cart-table tbody tr:nth-child(1) { animation-delay: 0.05s; }
-    .cart-table tbody tr:nth-child(2) { animation-delay: 0.10s; }
-    .cart-table tbody tr:nth-child(3) { animation-delay: 0.15s; }
-    .cart-table tbody tr:nth-child(4) { animation-delay: 0.20s; }
-    .cart-table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    .cart-table tbody tr:nth-child(1) { animation-delay: 0.02s; }
+    .cart-table tbody tr:nth-child(2) { animation-delay: 0.04s; }
+    .cart-table tbody tr:nth-child(3) { animation-delay: 0.06s; }
+    .cart-table tbody tr:nth-child(4) { animation-delay: 0.08s; }
+    .cart-table tbody tr:nth-child(5) { animation-delay: 0.10s; }
 </style>
