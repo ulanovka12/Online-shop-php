@@ -3,6 +3,16 @@
         <h1>Order</h1>
         <hr>
 
+        <!-- БАГ: контроллер (OrderController::handleCheckout) уже давно кладёт текст ошибки
+             в переменную $errorMessage (например, "сумма корзины должна быть больше 1000"
+             или сообщение из OrderService при сбое создания заказа), но эта форма никогда
+             её не выводила — пользователь просто видел пустую форму заново и не понимал,
+             что пошло не так. БЫЛО: $errorMessage нигде не echo'ился. СТАЛО: показываем его
+             красным текстом сверху формы, если он есть. -->
+        <?php if (!empty($errorMessage)): ?>
+            <label style="color: #ff0000"><?php echo htmlspecialchars($errorMessage); ?></label>
+        <?php endif; ?>
+
         <label for="name"><b>Name</b></label>
         <?php if (isset($errors['name'])): ?>
             <label style="color: #ff0000"><?php echo $errors['contact_name']; ?></label>

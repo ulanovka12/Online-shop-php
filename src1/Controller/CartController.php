@@ -58,12 +58,26 @@ class CartController extends BaseController
 
     public function updateCart(CartRequest $request)
     {
-        if ($this->authService->check()) {
+        // БАГ: условие было перевёрнуто — if ($this->authService->check()) отправляло на /login
+        // именно ЗАЛОГИНЕННОГО пользователя, а гостя (для которого check() === false) пропускало дальше,
+        // хотя дальше код обращается к $user->getId() и упал бы с ошибкой для гостя.
+        // БЫЛО: if ($this->authService->check()) -> СТАЛО: if (!$this->authService->check()).
+        // ПОЧЕМУ: check() возвращает true, если пользователь уже вошёл в систему, значит на /login
+        // нужно отправлять как раз тех, у кого check() === false (не вошёл).
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
-        $request->CartValidate();
+        // БАГ: результат CartValidate() игнорировался, поэтому даже при ошибке валидации
+        // (например, product_id <= 0) код продолжал выполняться и пытался обновить корзину.
+        // БЫЛО: $request->CartValidate(); (без проверки) -> СТАЛО: результат сохраняется в $errors
+        // и при наличии ошибок мы прерываем выполнение и возвращаем пользователя обратно в корзину.
+        $errors = $request->CartValidate();
+        if (!empty($errors)) {
+            header('Location: /cart');
+            exit();
+        }
 
         $user = $this->authService->getCurrentUser();
 
@@ -74,14 +88,23 @@ class CartController extends BaseController
         exit();
     }
 
-    public function removeFromCart(int $productId)
+    public function removeFromCart()
     {
-        if ($this->authService->check()) {
+        // Та же ошибка с перевёрнутым условием, что и в updateCart() — см. комментарий выше.
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit();
         }
 
         $user = $this->authService->getCurrentUser();
+
+        // БАГ: метод объявлял обязательный параметр (int $productId), но роутер (Core\App::run())
+        // умеет передавать в контроллер только объект Request (если он указан в маршруте) — параметров
+        // из GET-строки он не подставляет. Маршрут '/remove-from-cart' зарегистрирован без Request-класса,
+        // значит вызов $controller->removeFromCart() всегда шёл БЕЗ аргументов и падал с ошибкой
+        // "Too few arguments to function". БЫЛО: параметр функции -> СТАЛО: читаем product_id
+        // напрямую из $_GET, откуда его и передаёт ссылка в cart.php ("/remove-from-cart?product_id=...").
+        $productId = (int)($_GET['product_id'] ?? 0);
 
         if ($productId > 0) {
             $this->user_productsModel->deleteByProductId($user->getId(), $productId);

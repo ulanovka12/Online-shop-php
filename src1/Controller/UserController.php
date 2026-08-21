@@ -41,9 +41,14 @@ class UserController extends BaseController
             // Создаём пользователя
             $userId = $this->userModel->getByUsername($name, $email, $password);
             if ($userId) {
-                // Автоматический вход после регистрации (опционально)
+                // БАГ: код вызывал auth() (он реально создаёт сессию — пользователь становится
+                // залогинен), но затем всё равно редиректил на /login. А форма логина (getLogin())
+                // не проверяет, залогинен ли уже пользователь, и просто рисует форму заново — то есть
+                // человек только что зарегистрировался и вошёл, а видел снова форму входа, будто
+                // ничего не произошло. БЫЛО: header('Location: /login') после успешного auth() ->
+                // СТАЛО: редирект в /catalog, как и после обычного успешного логина в методе login().
                 $this->authService->auth($request->getEmail(), $request->getPassword());
-                header('Location: /login');
+                header('Location: /catalog');
                 exit();
             } else {
                 $errors['auth'] = 'Неверный email или пароль';
@@ -149,7 +154,14 @@ class UserController extends BaseController
         }
 
         // ---- Валидация
-        $errors = $request->validateProfileUpdate();
+        // БАГ: validateProfileUpdate() искал в БД пользователя с новым email и, если находил кого-то,
+        // сразу писал ошибку "email уже существует" — но он ищет вообще ЛЮБОГО пользователя с таким
+        // email, включая самого текущего! Из-за этого, если человек менял только имя, а email оставлял
+        // прежним, форма всё равно выдавала ложную ошибку "Этот Email уже существует" (ведь запись
+        // с таким email действительно есть — это его собственная запись). БЫЛО: validateProfileUpdate()
+        // без данных о текущем пользователе -> СТАЛО: передаём $userId, чтобы метод мог отличить
+        // "email занят другим человеком" от "это email самого пользователя" (см. ProfileRequest.php).
+        $errors = $request->validateProfileUpdate($userId);
 
         if (empty($errors)) {
             // Если пароль не пуст – хешируем, иначе оставляем NULL (не меняем)
@@ -168,8 +180,12 @@ class UserController extends BaseController
         $_SESSION['form_errors'] = $errors;
         $_SESSION['old_input'] = ['name' => $newName, 'email' => $newEmail];
 
-        // Возвращаемся на страницу редактирования
-        header('Location: /profile/edit');
+        // БАГ: маршрута "/profile/edit" в приложении не существует (в Core\App зарегистрирован
+        // "/profile-change" — см. src1/public/index.php и Core/App.php), поэтому при ошибке валидации
+        // пользователь получал бы 404 вместо формы редактирования со своими ошибками.
+        // БЫЛО: '/profile/edit' -> СТАЛО: '/profile-change' (реально существующий GET-маршрут,
+        // который вызывает editProfile() и как раз показывает $_SESSION['form_errors']/'old_input').
+        header('Location: /profile-change');
         exit();
     }
 

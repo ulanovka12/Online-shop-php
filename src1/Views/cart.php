@@ -66,7 +66,12 @@
                             </td>
                             <td class="fw-semibold">Р<?php echo number_format($item->getPrice(), 2); ?></td>
                             <td>
-                                <form action="/add-product" method="POST" class="d-flex align-items-center gap-2">
+                                <!-- БАГ: форма отправляла запрос на /add-product, а этот адрес обрабатывает
+                                     ProductController::product(), где количество ВСЕГДА увеличивалось на 1
+                                     и введённое здесь число никак не использовалось. БЫЛО: action="/add-product"
+                                     -> СТАЛО: action="/update-cart" — отдельный маршрут (CartController::updateCart
+                                     + CartRequest), который ставит количество ровно таким, какое ввёл пользователь. -->
+                                <form action="/update-cart" method="POST" class="d-flex align-items-center gap-2">
                                     <input type="hidden" name="product_id" value="<?php echo $item->getId(); ?>">
                                     <input type="number"
                                            name="amount"

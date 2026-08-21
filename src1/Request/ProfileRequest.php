@@ -28,7 +28,7 @@ class ProfileRequest
         return $this->data['password'];
     }
 
-    public function validateProfileUpdate(): array
+    public function validateProfileUpdate(int $currentUserId = 0): array
     {
         $errors = [];
 
@@ -44,7 +44,14 @@ class ProfileRequest
                 $errors['email'] = 'Неправильный email';
             } else {
                 $user = $this->userModel->getByEmail($email);
-                if ($user !== null && $user->getId()) {
+                // БАГ: условие "$user !== null && $user->getId()" срабатывало на ЛЮБОГО пользователя
+                // с таким email — в том числе на самого текущего. Из-за этого, если человек сохранял
+                // профиль, не меняя email, форма ошибочно говорила "Этот Email уже существует".
+                // БЫЛО: проверялось только "email кому-то принадлежит" -> СТАЛО: ошибка ставится,
+                // только если найденный пользователь — это КТО-ТО ДРУГОЙ (его id не совпадает
+                // с $currentUserId, который передаёт контроллер). Так свой же email сохранять можно,
+                // а чужой (уже занятый) — нельзя.
+                if ($user !== null && $user->getId() !== $currentUserId) {
                     $errors['email'] = 'Этот Email уже существует';
                 }
             }

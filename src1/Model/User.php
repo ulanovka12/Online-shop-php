@@ -66,8 +66,14 @@ class User extends Model
 
     public function getByIdProfile(int $userId): self|null
     {
-
-        $stmt = $this->pdo->query("SELECT * FROM {$this->getTableName()} WHERE id = $userId");
+        // БАГ 1 (безопасность): $userId подставлялся прямо в текст SQL-запроса ($this->pdo->query("... id = $userId")).
+        // Если бы $userId пришёл не из проверенного места, а напрямую от пользователя (например, из cookie),
+        // через него можно было бы сделать SQL-инъекцию. БЫЛО: query() со строкой -> СТАЛО: prepare()
+        // с именованным параметром :id, значение которого PDO передаёт отдельно от текста запроса и не даёт
+        // интерпретировать его как часть SQL. ПОЧЕМУ: prepare()+execute() — стандартный безопасный способ
+        // передавать переменные в запрос, его и используют остальные методы этого класса.
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
         $user = $stmt->fetch();
 
         if ($user === false)
@@ -81,7 +87,11 @@ class User extends Model
         $obj->name = $user['name'];
         $obj->email = $user['email'];
         $obj->password = $user['password'];
-        $obj->image_url = $result['image_url'] ?? '';
+        // БАГ 2: было обращение к переменной $result, которая в этом методе вообще не существует
+        // (нет такой переменной выше по коду) — это должно было вызывать Warning "Undefined variable $result"
+        // и image_url у профиля всегда был бы пустым. БЫЛО: $result['image_url'] -> СТАЛО: $user['image_url'],
+        // т.к. именно в $user лежат данные, полученные из БД строкой выше.
+        $obj->image_url = $user['image_url'] ?? '';
 
         return $obj;
     }

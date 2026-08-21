@@ -21,7 +21,12 @@ class ProductController extends BaseController
 
     public function getProducts()
     {
-        if ($this->authService->check()) {
+        // БАГ: условие было перевёрнуто. check() возвращает true для уже вошедшего пользователя,
+        // а форма "Добавление продукта" ниже требует залогиненного юзера (в product() без него сразу
+        // редирект на /login). БЫЛО: if ($this->authService->check()) — блокировало как раз тех, кто
+        // вошёл, а гостей пускало на форму, которая им всё равно бесполезна. СТАЛО: if (!check())
+        // — на форму пускаем только вошедших, гостей отправляем логиниться.
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit();
         }
@@ -30,33 +35,39 @@ class ProductController extends BaseController
 
     public function product(ProductRequest $request)
     {
-//        // Проверяем, что это POST-запрос и передан product_id
-//        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
-//            header("Location: /catalog");
-//            exit();
-//        }
-
         $user = $this->authService->getCurrentUser();
-//        var_dump($user);
         if (!$user) {
             header('Location: /login');
             exit;
         }
-        $amount = 1; // всегда добавляем одну единицу
 
-        $request->validateProduct();
+        // БАГ: результат validateProduct() нигде не сохранялся и не проверялся, поэтому форма
+        // могла отправить несуществующий product_id или amount <= 0, и код всё равно продолжал бы
+        // работать дальше. БЫЛО: $request->validateProduct(); (результат отбрасывался) -> СТАЛО:
+        // сохраняем ошибки и, если они есть, прерываемся и возвращаем пользователя в каталог.
+        $errors = $request->validateProduct();
+        if (!empty($errors)) {
+            header("Location: /catalog");
+            exit();
+        }
+
+        // БАГ: была объявлена переменная $amount = 1 с комментарием "всегда добавляем одну единицу",
+        // но нигде не использовалась — вместо неё код читал $request->getAmount() (правильно) для новой
+        // записи, а для уже существующей записи чуть ниже жёстко прибавлял "+ 1" вместо количества
+        // из запроса. Из-за этого, например, форма add_product_form.php (где можно ввести любое amount)
+        // при повторном добавлении того же товара игнорировала введённое число и всегда прибавляла 1.
+        // БЫЛО: $newAmount = $existing->getAmount() + 1; -> СТАЛО: прибавляем именно $request->getAmount().
+        $amount = $request->getAmount();
 
         // Проверяем, есть ли уже этот товар у пользователя
-
         $existing = $this->user_productsModel->getUserProduct($request->getProductId(), $user->getId());
 
-
         if ($existing === null) {
-            // Если нет – вставляем новую запись с количеством 1
-            $this->user_productsModel->insertUserProduct($user->getId(), $request->getProductId(), $request->getAmount());
+            // Если нет – вставляем новую запись с указанным количеством
+            $this->user_productsModel->insertUserProduct($user->getId(), $request->getProductId(), $amount);
         } else {
-            // Если есть – увеличиваем количество на 1
-            $newAmount = $existing->getAmount() + 1;
+            // Если есть – увеличиваем количество на amount из запроса
+            $newAmount = $existing->getAmount() + $amount;
             $this->user_productsModel->updateUserProduct($newAmount, $user->getId(), $request->getProductId());
         }
 
@@ -66,19 +77,22 @@ class ProductController extends BaseController
 
     public function catalog()
     {
-
-        $user = $this->authService->getCurrentUser() ?? 1; // если нет сессии – гость
+        $user = $this->authService->getCurrentUser();
 
         // Получаем все товары
         $products = $this->productModel->getAll();
 
-        if (!$user) {
-            $this->authService->check();
-            header("Location: /login");
-            exit(); // редирект на логин
+        // БАГ (утечка данных): было "$user = $this->authService->getCurrentUser() ?? 1;" — если сессии
+        // нет, $user становился числом 1 (как будто это ID пользователя), а не null. Дальше стояла
+        // проверка "if (!$user)", но число 1 в PHP всегда true, поэтому этот код никогда не выполнялся,
+        // а гостю (!) подставлялась корзина РЕАЛЬНОГО пользователя с id=1 — то есть любой незалогиненный
+        // посетитель видел количество товаров в каталоге, как будто оно из чужой корзины.
+        // БЫЛО: гость получал корзину user_id=1 -> СТАЛО: у гостя (нет объекта $user) корзина просто
+        // пустая, поэтому у всех товаров в каталоге будет amount = 0, как и должно быть для незалогиненных.
+        if ($user) {
+            $userProducts = $this->user_productsModel->getAllUserProductByUserId($user->getId());
         } else {
-            $userId = is_object($user) ? $user->getId() : (int)$user;
-            $userProducts = $this->user_productsModel->getAllUserProductByUserId($userId);
+            $userProducts = [];
         }
 
         // Превращаем корзину в массив [product_id => amount]
