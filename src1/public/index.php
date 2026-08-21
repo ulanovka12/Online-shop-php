@@ -32,8 +32,8 @@ $app->get('/cart', \Controller\CartController::class, 'cart' );
 $app->post('/update-cart',  \Controller\CartController::class, 'updateCart', \Request\CartRequest::class );
 $app->get('/remove-from-cart',  \Controller\CartController::class, 'removeFromCart' );
 $app->get('/clear-cart', \Controller\CartController::class, 'clearCart' );
-
-$app->post('/add-product', \Controller\CartController::class, 'addProductToCart', \Request\AddProductRequest::class );
+//
+//$app->post('/add-product', \Controller\CartController::class, 'addProductToCart', \Request\AddProductRequest::class );
 $app->post('/decrease-product', \Controller\CartController::class, 'decreaseProductFromCart', \Request\AddProductRequest::class );
 
 $app->get('/profile-change', \Controller\UserController::class, 'editProfile');
